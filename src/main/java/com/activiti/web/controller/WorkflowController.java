@@ -3,6 +3,7 @@ package com.activiti.web.controller;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.activiti.common.DeploymentResponse;
 import com.activiti.common.JsonResult;
 import com.activiti.common.ResponseCode;
 import com.activiti.dto.WorkflowDto;
@@ -51,31 +54,33 @@ public class WorkflowController extends BaseRestController{
 	 */
 	@ApiOperation(value = "部署管理首页显示")
 	@RequestMapping(value="/deployHome",method = RequestMethod.GET)
-	public String deployHome(){
+	public Object deployHome(){
 		//1:查询部署对象信息，对应表（act_re_deployment）
 		List<Deployment> depList = workflowService.findDeploymentList();
+		List<DeploymentResponse> list = new ArrayList<>();
 		for(Deployment d : depList){
+			list.add(new DeploymentResponse(d));
 			System.out.println("DeploymentId:"+d.getId() + " DeploymentName" + d.getName() 
 				+ "DeploymentTenantId:" + d.getTenantId() +" Class:" +d.getClass() + " Category:" + d.getCategory());
 		}
-		//2:查询流程定义的信息，对应表（act_re_procdef）
-		List<ProcessDefinition> pdList = workflowService.findProcessDefinitionList();
+//		//2:查询流程定义的信息，对应表（act_re_procdef）
+//		List<ProcessDefinition> pdList = workflowService.findProcessDefinitionList();
 		
-		for(ProcessDefinition p : pdList){
-			System.out.println("id:"+p.getId()+" name:"+p.getName()+" key:" + p.getKey()+" version:"
-		+p.getVersion()+" resource:" + p.getDiagramResourceName());
-		}
+//		for(ProcessDefinition p : pdList){
+//			System.out.println("id:"+p.getId()+" name:"+p.getName()+" key:" + p.getKey()+" version:"
+//		+p.getVersion()+" resource:" + p.getDiagramResourceName());
+//		}
 		Map<String, Object> map= new HashMap<>();
-		map.put("depList", depList);
-		map.put("pdList", pdList);
+		map.put("depList", list);
+//		map.put("pdList", pdList);
 		
 		JsonResult result = new JsonResult();
 		result.setContent(map);
 		
 		result.setStatus(HttpStatus.OK.value());
 		result.setCode(ResponseCode.SUCCESS.value());
-		
-		return JsonUtil.obj2String(result);
+//		return JsonUtil.obj2String(result);
+		return map;
 	}
 	
 	/**

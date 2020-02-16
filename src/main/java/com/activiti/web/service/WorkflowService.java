@@ -220,8 +220,8 @@ public class WorkflowService {
 	public String  taskHisList(Integer offset, Integer limit){
 		List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()//历史任务表查询
 				//.processInstanceId(processInstanceId)//使用流程实例ID查询
-				.asc()
-				.listPage(0, 5);
+				.orderByProcessDefinitionId().asc()
+				.listPage(offset, limit);
 		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
 	    for (HistoricTaskInstance task : htiList) {
 	    	TaskVO to = new TaskVO();

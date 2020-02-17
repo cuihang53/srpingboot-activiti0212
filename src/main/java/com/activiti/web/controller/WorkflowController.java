@@ -184,9 +184,9 @@ public class WorkflowController extends BaseRestController{
 
 	
 	@ApiOperation(value = "查看任务历史列表（历史任务包含当前正在处理节点信息）")
-	@RequestMapping(value="/hisTaskList/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
-	public String hisTaskList(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
-		String result = workflowService.taskHisList(offset,limit);
+	@RequestMapping(value="/hisTaskList/pagenum/{pagenum}/pagesize/{pagesize}",method = RequestMethod.GET)
+	public String hisTaskList(@PathVariable("pagenum") Integer pageNum, @PathVariable("pagesize") Integer pageSize) {
+		String result = workflowService.taskHisList(pageNum,pageSize);
 		return result;
 	}
 	

@@ -217,11 +217,11 @@ public class WorkflowService {
 	 * @param limit
 	 * @return
 	 */
-	public String  taskHisList(Integer offset, Integer limit){
+	public String  taskHisList(Integer pageNum, Integer pageSize){
 		List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()//历史任务表查询
 				//.processInstanceId(processInstanceId)//使用流程实例ID查询
 				.orderByProcessDefinitionId().asc()
-				.listPage(offset, limit);
+				.listPage(pageSize * (pageNum - 1), pageSize);
 		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
 	    for (HistoricTaskInstance task : htiList) {
 	    	TaskVO to = new TaskVO();

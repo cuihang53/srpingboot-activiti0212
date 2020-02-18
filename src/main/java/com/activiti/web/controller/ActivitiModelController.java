@@ -18,12 +18,13 @@ import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.activiti.common.ToWeb;
+import com.activiti.explorer.CustomBpmnJsonConverter;
+import com.activiti.explorer.CustomUserTaskJsonConverter;
 import com.activiti.web.controller.base.RestServiceController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,6 +83,7 @@ public class ActivitiModelController implements RestServiceController<Model, Str
         editorNode.put("stencilset", stencilSetNode);
         repositoryService.addModelEditorSource(id,editorNode.toString().getBytes("utf-8"));
         response.sendRedirect("/modeler.html?modelId="+id);
+//        ToWeb.buildResult().redirectUrl("/modeler.html?modelId="+id);
     }
  
     /**
@@ -113,7 +115,11 @@ public class ActivitiModelController implements RestServiceController<Model, Str
         }
  
         JsonNode modelNode = new ObjectMapper().readTree(bytes);
- 
+
+        //自定义节点属性
+        CustomBpmnJsonConverter.getConvertersToBpmnMap().put("UserTask", CustomUserTaskJsonConverter.class);
+
+        
         BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
         if(model.getProcesses().size()==0){
             return "数据模型不符要求，请至少设计一条主线流程。";
@@ -131,32 +137,8 @@ public class ActivitiModelController implements RestServiceController<Model, Str
  
         return "SUCCESS";
     }
- 
-  
-    /**
-     *  启动流程
-     */
-    @RequestMapping("/start")
-    @ResponseBody
-    public Object startProcess(String keyName) {
-        ProcessInstance process = processEngine.getRuntimeService().startProcessInstanceByKey(keyName);
- 
-        return process.getId() + " : " + process.getProcessDefinitionId();
-    }
- 
-    /**
-     *  提交任务
-     */
-    @RequestMapping("/run")
-    @ResponseBody
-    public Object run(String processInstanceId) {
-        Task task = processEngine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).singleResult();
- 
-//        log.info("task {} find ", task.getId());
-        processEngine.getTaskService().complete(task.getId());
-        return "SUCCESS";
-    }
 
+    
     @Override
     public Object getOne(@PathVariable("id") String id) {
         Model model = repositoryService.createModelQuery().modelId(id).singleResult();
@@ -187,19 +169,16 @@ public class ActivitiModelController implements RestServiceController<Model, Str
 
 	@Override
 	public Object postOne(Model entity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object putOne(String id, Model entity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object patchOne(String id, Model entity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -314,4 +314,11 @@ public class DatetimeUtil {
 
         return c1.compareTo(c2);
     }
+    
+    public static int calLastedTime(Date startDate) {
+		long a = new Date().getTime();
+		long b = startDate.getTime();
+		int c = (int)((a - b) / 1000);
+		return c;
+	}
 }

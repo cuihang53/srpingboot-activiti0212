@@ -1,8 +1,12 @@
 package com.activiti.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.parse.BpmnParseHandler;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.activiti.explorer.ExtensionUserTaskParseHandler;
+
 @Configuration
 public class ActitytiDataSourceConfig extends AbstractProcessEngineAutoConfiguration {
  
@@ -18,19 +24,30 @@ public class ActitytiDataSourceConfig extends AbstractProcessEngineAutoConfigura
     @Autowired
 	private DataSource dataSource;
     
+    @Autowired
+    public ExtensionUserTaskParseHandler extensionUserTaskParseHandler;
+    
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource);
     }
+    
  
     @Bean
     public SpringProcessEngineConfiguration springProcessEngineConfiguration() {
+    	
+    	List<BpmnParseHandler> bpmnParseHandlers = new ArrayList<BpmnParseHandler>();
+    	bpmnParseHandlers.add( extensionUserTaskParseHandler );
         SpringProcessEngineConfiguration configuration = new SpringProcessEngineConfiguration();
         configuration.setDataSource(dataSource);
         configuration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
         configuration.setJobExecutorActivate(true);
         configuration.setTransactionManager(transactionManager());
+        
+        configuration.setCustomDefaultBpmnParseHandlers(bpmnParseHandlers);
         return configuration;
     }
  
+    
+   
 }

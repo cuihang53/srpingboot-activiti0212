@@ -19,8 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-@Api(value = "请假")
-
+@Api(value = "请假申请")
 @RestController
 public class LeaveBillController extends BaseRestController{
 	

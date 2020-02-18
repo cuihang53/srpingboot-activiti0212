@@ -2,24 +2,26 @@ package com.activiti.web.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
+import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.identity.Authentication;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -61,7 +63,6 @@ public class WorkflowService {
 	
 	@Autowired
 	private HistoryService historyService;
-
 	
 
 	/**部署流程定义*/
@@ -116,28 +117,28 @@ public class WorkflowService {
 	
 	/**更新请假状态，启动流程实例，让启动的流程实例关联业务*/
 	
-	public void saveStartProcess(WorkflowBean workflowBean) {
-		//1：获取请假单ID，使用请假单ID，查询请假单的对象LeaveBill
-//		Long id = workflowBean.getId();
-		Long businessId = 1L;
-		LeaveBill leaveBill = leaveBillDao.findLeaveBillById(businessId);
-		//2：更新请假单的请假状态从0变成1（初始录入-->审核中）
-		leaveBill.setState(1);
-		//3：使用当前对象获取到流程定义的key（对象的名称就是流程定义的key）
-//		String key = leaveBill.getClass().getSimpleName();
-//		String key = "leaveBill2";
-		/**
-		 * 4：从Session中获取当前任务的办理人，使用流程变量设置下一个任务的办理人
-			    * inputUser是流程变量的名称，
-			    * 获取的办理人是流程变量的值
-		 */
-		Map<String, Object> variables = new HashMap<String,Object>();
-		variables.put("inputUser", "cuihang");//表示惟一用户
-		
-//		runtimeService.startProcessInstanceById("LeaveBill2:1:15004",variables);
-		runtimeService.startProcessInstanceByKey("LeaveBill2", String.valueOf(businessId),variables);
-		
-	}
+//	public void saveStartProcess(WorkflowBean workflowBean) {
+//		//1：获取请假单ID，使用请假单ID，查询请假单的对象LeaveBill
+////		Long id = workflowBean.getId();
+//		Long businessId = 1L;
+//		LeaveBill leaveBill = leaveBillDao.findLeaveBillById(businessId);
+//		//2：更新请假单的请假状态从0变成1（初始录入-->审核中）
+//		leaveBill.setState(1);
+//		//3：使用当前对象获取到流程定义的key（对象的名称就是流程定义的key）
+////		String key = leaveBill.getClass().getSimpleName();
+////		String key = "leaveBill2";
+//		/**
+//		 * 4：从Session中获取当前任务的办理人，使用流程变量设置下一个任务的办理人
+//			    * inputUser是流程变量的名称，
+//			    * 获取的办理人是流程变量的值
+//		 */
+//		Map<String, Object> variables = new HashMap<String,Object>();
+//		variables.put("inputUser", "cuihang");//表示惟一用户
+//		
+////		runtimeService.startProcessInstanceById("LeaveBill2:1:15004",variables);
+//		runtimeService.startProcessInstanceByKey("LeaveBill2", String.valueOf(businessId),variables);
+//		
+//	}
 	
 	
 	public void saveStartProcess(Map<String, Object> variables, String businessId, String instanceKey){
@@ -151,12 +152,36 @@ public class WorkflowService {
 	 * @param variables 节点参数   例如：驳回/通过 处理人等 
 	 * @return ProcessInstance 流程变量实例 用于判断流程是否走完  用作改变业务代码工单状态
 	 */
-	public ProcessInstance taskComplete(String taskId, Map<String, Object> variables){
+//	public ProcessInstance taskComplete(String taskId, Map<String, Object> variables){
+		public void taskComplete(String taskId, Map<String, Object> variables){
 			//查询任务
 			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 			
-			//获取流程实例ID
+			//获取流程实例ID 对应act_ru_execution的ID
 			String processInstanceId = task.getProcessInstanceId();
+			
+			
+			
+			//TODO:后期删除
+			
+			List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
+			
+			for(Task task1 : tasks){
+				ProcessDefinitionEntity pro = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(task1.getProcessDefinitionId());
+				List<ActivityImpl> actList = pro.getActivities();
+				String excId = task1.getExecutionId();
+				ExecutionEntity execution = (ExecutionEntity) runtimeService.createExecutionQuery().executionId(excId).singleResult();
+				String activitiId = execution.getActivityId();
+				for(ActivityImpl activityImpl :actList){
+					String id = activityImpl.getId();
+					if(activitiId.equals(id)){
+						  System.out.println("当前任务："+activityImpl.getProperty("name")+
+			        			  ";自定义属性值:"+activityImpl.getProperty("approveType")); 
+					}
+				}
+			}
+			//
+			
 			//批注
 //			Authentication.setAuthenticatedUserId("cuihang");
 //			taskService.addComment(taskId, processInstanceId, message);
@@ -169,7 +194,7 @@ public class WorkflowService {
 			ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
 							.processInstanceId(processInstanceId)//使用流程实例ID查询
 							.singleResult();
-			return pi;
+//			return pi;
 			
 	}
 	
@@ -216,14 +241,27 @@ public class WorkflowService {
 	 * @param offset
 	 * @param limit
 	 * @return
+	 * @throws IOException 
 	 */
-	public String  taskHisList(Integer pageNum, Integer pageSize){
+	public String  taskHisList(Integer pageNum, Integer pageSize) throws IOException{
 		List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()//历史任务表查询
 				//.processInstanceId(processInstanceId)//使用流程实例ID查询
 				.orderByProcessDefinitionId().asc()
 				.listPage(pageSize * (pageNum - 1), pageSize);
+		
+		
 		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
 	    for (HistoricTaskInstance task : htiList) {
+	    	//TODO:查看自定义属性
+	    	ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(task.getProcessDefinitionId());
+//	    	List<ActivityImpl> activitis =  processDefinitionEntity.getActivities();
+//	    	for(ActivityImpl activiti : activitis){
+//	    		System.out.println("url:"+activiti.getProperty("urlType"));
+//	    	}
+	    	
+	    	String url = hisurl(task.getProcessInstanceId(), task.getId());
+	    	
+	    	//查看自定义属性结束
 	    	TaskVO to = new TaskVO();
 	        to.setTaskId(task.getId());
 	        to.setTaskDefinitionKey(task.getTaskDefinitionKey());
@@ -231,6 +269,7 @@ public class WorkflowService {
 	        to.setAssignee(task.getAssignee());
 	        to.setCreateTime(task.getCreateTime());
 	        to.setInstanceKey(task.getProcessInstanceId());
+	        to.setUrl(url);
 	        customTaskList.add(to);
 	    }
 		
@@ -248,6 +287,43 @@ public class WorkflowService {
 		return JsonUtil.obj2String(json);
 		
 	}
+	
+	
+	public String hisurl(String procInstanceId, String taskId) throws IOException{
+	     
+//	     TaskService taskService = processEngine.getTaskService();
+//	     RuntimeService runtimeService = processEngine.getRuntimeService();
+//	     RepositoryService repositoryService = processEngine.getRepositoryService();
+	     //1.通过procInstanceId获取所有历史节点
+	     List<HistoricActivityInstance> activityInstances =historyService
+	               .createHistoricActivityInstanceQuery()
+	               .processInstanceId(procInstanceId)
+	               .list();
+	   
+	     for(HistoricActivityInstance act :activityInstances) {
+	      //2.然后根据当前任务获取当前流程的流程定义，然后根据流程定义获得所有的节点：
+	         ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(act.getProcessDefinitionId());
+	         List<ActivityImpl> activitiList = def.getActivities(); //rs是指RepositoryService的实例
+	         //3.获取当前节点的任务id
+	         String id =act.getTaskId();
+	         if(taskId.equals(id)&&id!=null){
+	          //4.匹配对应任务id的节点id
+		          String activitiId=act.getActivityId();
+		    
+		         for(ActivityImpl activityImpl:activitiList){
+			          String activityImplid = activityImpl.getId();
+			          //5.循环所有节点，匹配对应节点，输出其属性
+			          if(activitiId.equals(activityImplid)){
+			        	  System.out.println("当前任务："+activityImpl.getProperty("name")+
+			        			  ";自定义属性值:"+activityImpl.getProperty("approveType")); //输出某个节点的某种属性
+			        	  return String.valueOf(activityImpl.getProperty("approveType"));
+			          }
+		         }
+	         }
+	     }
+	     return null;
+    }
+	
 	
 	/**
 	 * 使用任务ID，获取当前任务节点中对应的Form key中的连接的值

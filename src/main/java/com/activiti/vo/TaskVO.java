@@ -13,5 +13,5 @@ public class TaskVO {
 	private String assignee;
 	private Date createTime;
 	private String instanceKey;
-	
+	private String url;
 }

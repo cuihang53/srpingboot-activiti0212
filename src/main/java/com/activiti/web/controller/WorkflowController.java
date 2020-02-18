@@ -1,6 +1,7 @@
 package com.activiti.web.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -11,15 +12,14 @@ import java.util.Map;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.activiti.common.DeploymentResponse;
@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 
-
+@CrossOrigin
 @Api(value = "Workflow 控制中心")
 @RestController
 @RequestMapping("/wrokflow")
@@ -94,10 +94,10 @@ public class WorkflowController extends BaseRestController{
 		    //3.部署对象
 		    Deployment deploy = repositoryService.createDeployment()
 		        //添加bpmn资源
-		         .addClasspathResource("processes/leaveBill2.bpmn")
+		         .addClasspathResource("processes/LeaveBill.bpmn")
 		        //添加图片文件资源
-		         .addClasspathResource("processes/leaveBill2.png")
-		         .name("请假申请流程")
+		         .addClasspathResource("processes/LeaveBill.png")
+		         .name("请假申请流程0218")
 		         .deploy();
 		    //4.输出部署的一些信息
 		    System.out.println("deployId:" + deploy.getId() + "   deployName:" + deploy.getName());
@@ -159,16 +159,6 @@ public class WorkflowController extends BaseRestController{
 		return null;
 	}
 
-	
-	// 启动流程
-//	@ApiOperation(value = "启动流程")
-//	@RequestMapping(value="/startProcess",method = RequestMethod.GET)
-//	public String startProcess(){
-//		//更新请假状态，启动流程实例，让启动的流程实例关联业务
-//		workflowService.saveStartProcess(null);
-//		return "startProcess ok";
-//	}
-	
 	/**
 	 * 任务管理首页显示
 	 * @return
@@ -185,7 +175,7 @@ public class WorkflowController extends BaseRestController{
 	
 	@ApiOperation(value = "查看任务历史列表（历史任务包含当前正在处理节点信息）")
 	@RequestMapping(value="/hisTaskList/pagenum/{pagenum}/pagesize/{pagesize}",method = RequestMethod.GET)
-	public String hisTaskList(@PathVariable("pagenum") Integer pageNum, @PathVariable("pagesize") Integer pageSize) {
+	public String hisTaskList(@PathVariable("pagenum") Integer pageNum, @PathVariable("pagesize") Integer pageSize) throws IOException {
 		String result = workflowService.taskHisList(pageNum,pageSize);
 		return result;
 	}

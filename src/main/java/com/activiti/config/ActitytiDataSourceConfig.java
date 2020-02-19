@@ -24,9 +24,6 @@ public class ActitytiDataSourceConfig extends AbstractProcessEngineAutoConfigura
     @Autowired
 	private DataSource dataSource;
     
-    @Autowired
-    public ExtensionUserTaskParseHandler extensionUserTaskParseHandler;
-    
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource);
@@ -37,7 +34,7 @@ public class ActitytiDataSourceConfig extends AbstractProcessEngineAutoConfigura
     public SpringProcessEngineConfiguration springProcessEngineConfiguration() {
     	
     	List<BpmnParseHandler> bpmnParseHandlers = new ArrayList<BpmnParseHandler>();
-    	bpmnParseHandlers.add( extensionUserTaskParseHandler );
+    	bpmnParseHandlers.add( new ExtensionUserTaskParseHandler() );
         SpringProcessEngineConfiguration configuration = new SpringProcessEngineConfiguration();
         configuration.setDataSource(dataSource);
         configuration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);

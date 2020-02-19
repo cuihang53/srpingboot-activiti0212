@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
  
-@Component
+//@Component
 public class ExtensionUserTaskParseHandler extends UserTaskParseHandler {
     @Override
     protected void executeParse(BpmnParse bpmnParse, UserTask userTask) {

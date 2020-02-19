@@ -94,9 +94,9 @@ public class WorkflowController extends BaseRestController{
 		    //3.部署对象
 		    Deployment deploy = repositoryService.createDeployment()
 		        //添加bpmn资源
-		         .addClasspathResource("processes/LeaveBill.bpmn")
+		         .addClasspathResource("processes/scriptTest.bpmn")
 		        //添加图片文件资源
-		         .addClasspathResource("processes/LeaveBill.png")
+		         .addClasspathResource("processes/scriptTest.png")
 		         .name("请假申请流程0218")
 		         .deploy();
 		    //4.输出部署的一些信息

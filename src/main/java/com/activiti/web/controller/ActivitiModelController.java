@@ -2,6 +2,7 @@ package com.activiti.web.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,10 +57,11 @@ public class ActivitiModelController implements RestServiceController<Model, Str
         Model model = repositoryService.newModel();
  
         //设置一些默认信息
-        String name = "new-process";
+        String uuId= UUID.randomUUID().toString();
+        String name = uuId;
         String description = "";
         int revision = 1;
-        String key = "process";
+        String key = uuId;
  
         ObjectNode modelNode = objectMapper.createObjectNode();
         modelNode.put(ModelDataJsonConstants.MODEL_NAME, name);
@@ -116,9 +118,8 @@ public class ActivitiModelController implements RestServiceController<Model, Str
  
         JsonNode modelNode = new ObjectMapper().readTree(bytes);
 
-        //自定义节点属性
+        //自定义用户任务节点属性
         CustomBpmnJsonConverter.getConvertersToBpmnMap().put("UserTask", CustomUserTaskJsonConverter.class);
-
         
         BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
         if(model.getProcesses().size()==0){

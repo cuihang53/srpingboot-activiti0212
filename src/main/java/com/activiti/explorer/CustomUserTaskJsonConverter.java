@@ -19,8 +19,8 @@ public class CustomUserTaskJsonConverter extends UserTaskJsonConverter {
         UserTask userTask = (UserTask) flowElement;
         //将自己的属性添加到activiti自带的自定义属性中
         CustomProperty customProperty = new CustomProperty();
-        customProperty.setName("approveType");
-        customProperty.setSimpleValue(this.getPropertyValueAsString("approveType", elementNode));
+        customProperty.setName("approvetype");
+        customProperty.setSimpleValue(this.getPropertyValueAsString("approvetype", elementNode));
         userTask.getCustomProperties().add(customProperty);
         return userTask;
     }

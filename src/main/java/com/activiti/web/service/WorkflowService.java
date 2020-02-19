@@ -158,30 +158,20 @@ public class WorkflowService {
 			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 			
 			//获取流程实例ID 对应act_ru_execution的ID
-			String processInstanceId = task.getProcessInstanceId();
-			
-			
-			
-			//TODO:后期删除
-			
-			List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-			
-			for(Task task1 : tasks){
-				ProcessDefinitionEntity pro = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(task1.getProcessDefinitionId());
-				List<ActivityImpl> actList = pro.getActivities();
-				String excId = task1.getExecutionId();
-				ExecutionEntity execution = (ExecutionEntity) runtimeService.createExecutionQuery().executionId(excId).singleResult();
-				String activitiId = execution.getActivityId();
-				for(ActivityImpl activityImpl :actList){
-					String id = activityImpl.getId();
-					if(activitiId.equals(id)){
-						  System.out.println("当前任务："+activityImpl.getProperty("name")+
-			        			  ";自定义属性值:"+activityImpl.getProperty("approveType")); 
-					}
+//			String processInstanceId = task.getProcessInstanceId();
+			//TODO:后期删除 start
+			ProcessDefinitionEntity pro = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(task.getProcessDefinitionId());
+			List<ActivityImpl> actList = pro.getActivities();
+			String excId = task.getExecutionId();
+			ExecutionEntity execution = (ExecutionEntity) runtimeService.createExecutionQuery().executionId(excId).singleResult();
+			String activitiId = execution.getActivityId();
+			for(ActivityImpl activityImpl :actList){
+				String id = activityImpl.getId();
+				if(activitiId.equals(id)){
+					  System.out.println("当前任务："+activityImpl.getProperty("name")+";自定义属性值:"+activityImpl.getProperty("approvetype")); 
 				}
 			}
-			//
-			
+			//end
 			//批注
 //			Authentication.setAuthenticatedUserId("cuihang");
 //			taskService.addComment(taskId, processInstanceId, message);
@@ -191,9 +181,9 @@ public class WorkflowService {
 			taskService.complete(taskId, variables);
 			
 			//查询act_ru_execution表 如果为空表示流程结束
-			ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
-							.processInstanceId(processInstanceId)//使用流程实例ID查询
-							.singleResult();
+//			ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
+//							.processInstanceId(processInstanceId)//使用流程实例ID查询
+//							.singleResult();
 //			return pi;
 			
 	}
@@ -290,10 +280,6 @@ public class WorkflowService {
 	
 	
 	public String hisurl(String procInstanceId, String taskId) throws IOException{
-	     
-//	     TaskService taskService = processEngine.getTaskService();
-//	     RuntimeService runtimeService = processEngine.getRuntimeService();
-//	     RepositoryService repositoryService = processEngine.getRepositoryService();
 	     //1.通过procInstanceId获取所有历史节点
 	     List<HistoricActivityInstance> activityInstances =historyService
 	               .createHistoricActivityInstanceQuery()
@@ -315,8 +301,8 @@ public class WorkflowService {
 			          //5.循环所有节点，匹配对应节点，输出其属性
 			          if(activitiId.equals(activityImplid)){
 			        	  System.out.println("当前任务："+activityImpl.getProperty("name")+
-			        			  ";自定义属性值:"+activityImpl.getProperty("approveType")); //输出某个节点的某种属性
-			        	  return String.valueOf(activityImpl.getProperty("approveType"));
+			        			  ";自定义属性值:"+activityImpl.getProperty("approvetype")); //输出某个节点的某种属性
+			        	  return String.valueOf(activityImpl.getProperty("approvetype"));
 			          }
 		         }
 	         }
@@ -334,6 +320,22 @@ public class WorkflowService {
 		String url = formData.getFormKey();
 		return url;
 	}
+	
+	
+	
+	public String findServiceTaskProperty(String proDefId, String activitiId) {
+		//普通类从spring容器中拿出service
+		ProcessDefinitionEntity pro = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(proDefId);
+		List<ActivityImpl> actList = pro.getActivities();
+		for(ActivityImpl activityImpl :actList){
+			String id = activityImpl.getId();
+			if(activitiId.equals(id)){
+				  System.out.println("当前任务："+activityImpl.getProperty("name")+";超时时间:"+activityImpl.getProperty("timeoutTime")+activityImpl.getProperty("timeoutTime")); 
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 一：使用任务ID，查找请假单ID，从而获取请假单信息

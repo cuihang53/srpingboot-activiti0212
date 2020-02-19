@@ -259,7 +259,7 @@ public class WorkflowService {
 	        to.setAssignee(task.getAssignee());
 	        to.setCreateTime(task.getCreateTime());
 	        to.setInstanceKey(task.getProcessInstanceId());
-	        to.setUrl(url);
+	        to.setUrl(url==null ? "" : url);
 	        customTaskList.add(to);
 	    }
 		

@@ -14,4 +14,6 @@ public class TaskVO {
 	private Date createTime;
 	private String instanceKey;
 	private String url;
+	private Date endTime;
+	private Integer status;
 }

@@ -156,7 +156,8 @@ public class WorkflowService {
 		public void taskComplete(String taskId, Map<String, Object> variables){
 			//查询任务
 			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-			
+			//测试script task
+//			System.out.println(taskService.getVariable(taskId, "myVar"));
 			//获取流程实例ID 对应act_ru_execution的ID
 //			String processInstanceId = task.getProcessInstanceId();
 			//TODO:后期删除 start
@@ -260,6 +261,9 @@ public class WorkflowService {
 	        to.setCreateTime(task.getCreateTime());
 	        to.setInstanceKey(task.getProcessInstanceId());
 	        to.setUrl(url==null ? "" : url);
+	        to.setUrl("?ChildPage2");
+	        to.setEndTime(task.getEndTime());
+	        to.setStatus(task.getEndTime()==null ? 0 : 1);
 	        customTaskList.add(to);
 	    }
 		

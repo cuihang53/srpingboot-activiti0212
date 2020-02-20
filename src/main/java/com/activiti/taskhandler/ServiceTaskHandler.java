@@ -3,6 +3,9 @@ package com.activiti.taskhandler;
 
 
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
  
@@ -30,15 +33,18 @@ public class ServiceTaskHandler implements JavaDelegate{
 //		String timeOutTime = workflowService.findServiceTaskProperty(execution.getProcessDefinitionId(), execution.getCurrentActivityId());
 		String timeout= (String)timeoutTime.getValue(execution);
 		
-		Thread thread = new Thread(new TimerTaskThread(execution));
-		thread.run();//同步执行
+		
+		FutureTask<TimerTask> ft = new FutureTask<>(new TimerTaskThread(execution));
+		new Thread(ft).run();
+		TimerTask task = ft.get();
+		
 		
 		boolean result = true;
 		//TODO:2.while循环，每隔5秒查询定时任务表状态，没有状态则继续sleep
 		TimerTask newJob = new TimerTask();
 		int index = 0;			  //计数器
 		Date beginTime = null;
-		while (result) {
+		while (result && task != null) {
 	      try {
 		     	Date currentDate = new Date();
 		     	if(index==0){
@@ -53,9 +59,8 @@ public class ServiceTaskHandler implements JavaDelegate{
 					break;
 				}
 				newJob = timerTaskService.findByProcessInstenceId(execution.getProcessInstanceId());
-				System.out.println(newJob.getId() + " " + newJob.getActId() + " " + newJob.getBusinessKey() + " " +newJob.getInstanceKey());
 				//状态成功 结束循环
-				if(newJob!=null && newJob.getStatus() == 2){
+				if(newJob!=null && newJob.getStatus()==2){
 					result = false;
 				}
 				System.out.println(DatetimeUtil.getDate(currentDate, DatetimeUtil.DEFAULT_FORMAT) + "--自动节点执行第" + (++index) + "次");
@@ -72,15 +77,16 @@ public class ServiceTaskHandler implements JavaDelegate{
 		System.out.println("serviceTask已经执行已经执行！");
 	}
 	
-	public static class TimerTaskThread implements Runnable{
+	public static class TimerTaskThread implements Callable<TimerTask>{
 		TimerTaskService timerTaskService = SpringUtil.getBean("timerTaskService");
 		private DelegateExecution execution;
 		public TimerTaskThread(DelegateExecution execution){
 			this.execution = execution;
 		}
 		@Override
-		public void run() {
-			timerTaskService.insert(execution);
+		public TimerTask call() throws Exception {
+			// TODO Auto-generated method stub
+			return timerTaskService.insert(execution);
 		}
 	}
 	

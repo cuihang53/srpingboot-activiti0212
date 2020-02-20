@@ -214,6 +214,12 @@ public class WorkflowController extends BaseRestController{
 		return JsonUtil.obj2String(result);
 	}
 	
+	@RequestMapping(value="/test",method = RequestMethod.GET)
+	@ApiOperation(value = "远程任务")
+	public String test() {
+		
+		return "zhangsan";
+	}
 	
 	
 //	@ApiOperation(value = "登陆人的任务列表")

@@ -52,6 +52,11 @@ public class DeploymentUnitMaintenance implements Serializable {
 	private Date leaveStartTime;
 	@Column(name = "reasonForLeave",nullable = false,unique = true)
 	private	String reasonForLeave;
+	
+	
+	@Column(name = "status",nullable = false,unique = true)
+	private	Integer status;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -143,5 +148,12 @@ public class DeploymentUnitMaintenance implements Serializable {
 	public void setReasonForLeave(String reasonForLeave) {
 		this.reasonForLeave = reasonForLeave;
 	}
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
+	
 }

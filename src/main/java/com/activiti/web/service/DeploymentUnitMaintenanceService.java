@@ -41,8 +41,6 @@ public class DeploymentUnitMaintenanceService {
 			//保存请假工单
 			DeploymentUnitMaintenance result = deploymentUnitMaintenanceDao.save(dum);
 			System.out.println(result.getId());
-			
-			
 			//启动流程实例
 			if(result!=null && result.getId()!=null){
 				Map<String,Object>  variables = new HashMap<>();
@@ -50,7 +48,8 @@ public class DeploymentUnitMaintenanceService {
 				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentUnitMaintenance.getDeploymentId()).singleResult();
 				workflowService.saveStartProcess(variables, String.valueOf(result.getId()), p.getKey());
 			}
-			
+			dum.setStatus(1);//1 是审批中
+			deploymentUnitMaintenanceDao.save(dum);
 			return result;
 	}
 

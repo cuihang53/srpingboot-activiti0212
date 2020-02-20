@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.activiti.common.CommentResponse;
 import com.activiti.common.JsonResult;
 import com.activiti.common.ResponseCode;
 import com.activiti.entity.LeaveBill;
@@ -160,7 +161,7 @@ public class WorkflowService {
 			//测试script task
 //			System.out.println(taskService.getVariable(taskId, "myVar"));
 			//获取流程实例ID 对应act_ru_execution的ID
-//			String processInstanceId = task.getProcessInstanceId();
+			String processInstanceId = task.getProcessInstanceId();
 			//TODO:后期删除 start
 			ProcessDefinitionEntity pro = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(task.getProcessDefinitionId());
 			List<ActivityImpl> actList = pro.getActivities();
@@ -175,8 +176,8 @@ public class WorkflowService {
 			}
 			//end
 			//批注
-//			Authentication.setAuthenticatedUserId("cuihang");
-//			taskService.addComment(taskId, processInstanceId, message);
+			Authentication.setAuthenticatedUserId("cuihang");
+			taskService.addComment(taskId, processInstanceId, "非常优秀");
 			//完成任务
 			//variables.put("inputUser","张三")
 			//当前流程图使用listeners 监听的 com.activiti.taskhandler.ManagerTaskHandler 指定下个节点审批人
@@ -252,6 +253,15 @@ public class WorkflowService {
 //	    	}
 	    	HistoricProcessInstance  hp=  historyService.createHistoricProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
 	    	String url = hisurl(task.getProcessInstanceId(), task.getId());
+	    	
+	    	
+	    	//批注
+	    	List<Comment> list = taskService.getTaskComments(task.getId());
+	    	List<CommentResponse> comments = new ArrayList<>();
+	    	for(Comment comment : list){
+	    		comments.add(new CommentResponse(comment));
+	    	}
+	    	
 	    	System.out.println(url);
 	    	
 	    	//查看自定义属性结束

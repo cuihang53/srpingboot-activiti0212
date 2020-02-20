@@ -3,16 +3,10 @@ package com.activiti.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 
 import lombok.Data;
 @Data
 public class DeploymentUnitMaintenanceDto implements Serializable {
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private 	Integer  	id;						//部署单元维护id
 	private     Integer     leaveBillId;			//请假单id
 	private 	String 		applicant;				// 申请人
@@ -24,7 +18,7 @@ public class DeploymentUnitMaintenanceDto implements Serializable {
 	private     String      detailedDescription;	//详细描述
 	private 	Date 		createdTime;
 	private  	Date 		modifiedTime;
-	
+	private 	String deploymentId;
 	private     ChildPageFormJson    childPageFormJson;                 //子页面分组
 	
 	

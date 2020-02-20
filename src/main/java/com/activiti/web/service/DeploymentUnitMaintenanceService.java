@@ -42,10 +42,13 @@ public class DeploymentUnitMaintenanceService {
 			//保存请假工单
 			DeploymentUnitMaintenance result = deploymentUnitMaintenanceDao.save(dum);
 			System.out.println(result.getId());
+			
+			
+			//启动流程实例
 			if(result!=null && result.getId()!=null){
 				Map<String,Object>  variables = new HashMap<>();
 				variables.put("inputUser", "范冰冰");
-				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId("").singleResult();
+				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentUnitMaintenance.getDeploymentId()).singleResult();
 				workflowService.saveStartProcess(variables, String.valueOf(result.getId()), p.getKey());
 			}
 			

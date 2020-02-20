@@ -17,6 +17,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -249,8 +250,9 @@ public class WorkflowService {
 //	    	for(ActivityImpl activiti : activitis){
 //	    		System.out.println("url:"+activiti.getProperty("urlType"));
 //	    	}
-	    	
+	    	HistoricProcessInstance  hp=  historyService.createHistoricProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
 	    	String url = hisurl(task.getProcessInstanceId(), task.getId());
+	    	System.out.println(url);
 	    	
 	    	//查看自定义属性结束
 	    	TaskVO to = new TaskVO();
@@ -261,9 +263,10 @@ public class WorkflowService {
 	        to.setCreateTime(task.getCreateTime());
 	        to.setInstanceKey(task.getProcessInstanceId());
 	        to.setUrl(url==null ? "" : url);
-	        to.setUrl("?ChildPage2");
+//	        to.setUrl("ChildPage2");
 	        to.setEndTime(task.getEndTime());
 	        to.setStatus(task.getEndTime()==null ? 0 : 1);
+	        to.setBusinessId(hp.getBusinessKey());
 	        customTaskList.add(to);
 	    }
 		

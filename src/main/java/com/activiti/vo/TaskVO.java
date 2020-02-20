@@ -16,4 +16,5 @@ public class TaskVO {
 	private String url;
 	private Date endTime;
 	private Integer status;
+	private String businessId;
 }

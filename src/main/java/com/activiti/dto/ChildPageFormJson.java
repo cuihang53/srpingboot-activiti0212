@@ -8,15 +8,19 @@ public class ChildPageFormJson implements Serializable  {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String leave;
+	private String leaves;
 	private String leaveDays;
 	private Date leaveStartTime;
-	private	String ReasonForLeave;
-	public String getLeave() {
-		return leave;
+	private	String reasonForLeave;
+	
+	
+	
+	
+	public String getLeaves() {
+		return leaves;
 	}
-	public void setLeave(String leave) {
-		this.leave = leave;
+	public void setLeaves(String leaves) {
+		this.leaves = leaves;
 	}
 	public String getLeaveDays() {
 		return leaveDays;
@@ -31,18 +35,18 @@ public class ChildPageFormJson implements Serializable  {
 		this.leaveStartTime = leaveStartTime;
 	}
 	public String getReasonForLeave() {
-		return ReasonForLeave;
+		return reasonForLeave;
 	}
 	public void setReasonForLeave(String reasonForLeave) {
-		ReasonForLeave = reasonForLeave;
+		reasonForLeave = reasonForLeave;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 	@Override
 	public String toString() {
-		return "ChildPageFormJson [leave=" + leave + ", leaveDays=" + leaveDays + ", leaveStartTime=" + leaveStartTime
-				+ ", ReasonForLeave=" + ReasonForLeave + "]";
+		return "ChildPageFormJson [leave=" + leaves + ", leaveDays=" + leaveDays + ", leaveStartTime=" + leaveStartTime
+				+ ", ReasonForLeave=" + reasonForLeave + "]";
 	}
 	
 	

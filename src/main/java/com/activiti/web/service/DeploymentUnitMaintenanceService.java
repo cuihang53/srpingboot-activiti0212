@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class DeploymentUnitMaintenanceService {
 			//将dto数据转到entity中
 			DeploymentUnitMaintenance dum = new DeploymentUnitMaintenance();
 			CopyObjectUtil.copyPropertiesIgnoreNull(deploymentUnitMaintenance, dum);
-			dum.setLeave(deploymentUnitMaintenance.getChildPageFormJson().getLeave());
+			dum.setLeaves(deploymentUnitMaintenance.getChildPageFormJson().getLeaves());
 			dum.setLeaveDays(deploymentUnitMaintenance.getChildPageFormJson().getLeaveDays());
 			dum.setLeaveStartTime(deploymentUnitMaintenance.getChildPageFormJson().getLeaveStartTime());
 			dum.setReasonForLeave(deploymentUnitMaintenance.getChildPageFormJson().getReasonForLeave());

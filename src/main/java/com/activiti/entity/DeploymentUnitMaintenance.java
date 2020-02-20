@@ -44,8 +44,8 @@ public class DeploymentUnitMaintenance implements Serializable {
 	private  	Date 		modifiedTime;
 	//@Column(name = "childPageFormJson",nullable = false,unique = true)
 	//private     childPageFormJson      childPageFormJson;                 //子页面分组
-	@Column(name = "leave",nullable = false,unique = true)
-	private String leave;
+	@Column(name = "leaves",nullable = false,unique = true)
+	private String leaves;
 	@Column(name = "leaveDays",nullable = false,unique = true)
 	private String leaveDays;
 	@Column(name = "leaveStartTime",nullable = false,unique = true)
@@ -113,11 +113,11 @@ public class DeploymentUnitMaintenance implements Serializable {
 		this.modifiedTime = modifiedTime;
 	}
 	
-	public String getLeave() {
-		return leave;
+	public String getLeaves() {
+		return leaves;
 	}
-	public void setLeave(String leave) {
-		this.leave = leave;
+	public void setLeaves(String leaves) {
+		this.leaves = leaves;
 	}
 	public String getLeaveDays() {
 		return leaveDays;

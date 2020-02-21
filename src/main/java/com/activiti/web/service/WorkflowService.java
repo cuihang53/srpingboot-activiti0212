@@ -157,7 +157,7 @@ public class WorkflowService {
 	 */
 	public String saveStartProcessByDeploymentId(Map<String, Object> variables, String businessId, String deploymentId){
 		ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).singleResult();
-		ProcessInstance proInstance = runtimeService.startProcessInstanceByKey(p.getId(), String.valueOf(businessId),variables);
+		ProcessInstance proInstance = runtimeService.startProcessInstanceByKey(p.getKey(), String.valueOf(businessId),variables);
 		
 		
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//

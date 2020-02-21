@@ -25,8 +25,6 @@ public class DeploymentUnitMaintenanceService {
 	private WorkflowService workflowService;
 	
 
-	@Autowired
-	private RepositoryService repositoryService;
 	
 	
 	
@@ -40,7 +38,6 @@ public class DeploymentUnitMaintenanceService {
 			dum.setReasonForLeave(deploymentUnitMaintenance.getChildPageFormJson().getReasonForLeave());
 			//保存请假工单
 			DeploymentUnitMaintenance result = deploymentUnitMaintenanceDao.save(dum);
-			System.out.println(result.getId());
 			//启动流程实例
 			if(result!=null && result.getId()!=null){
 				Map<String,Object>  variables = new HashMap<>();

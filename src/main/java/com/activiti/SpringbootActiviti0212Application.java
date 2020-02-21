@@ -23,6 +23,7 @@ public class SpringbootActiviti0212Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootActiviti0212Application.class, args);
+		System.out.println("~~项目启动成功~~");
 	}
 
 }

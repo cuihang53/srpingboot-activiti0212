@@ -149,6 +149,42 @@ public class WorkflowService {
 	
 	
 	/***
+	 * 通过部署ID 启动流程 返回 实例ID
+	 * @param variables
+	 * @param businessId
+	 * @param deploymentId
+	 * @return
+	 */
+	public String saveStartProcessByDeploymentId(Map<String, Object> variables, String businessId, String deploymentId){
+		ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).singleResult();
+		ProcessInstance proInstance = runtimeService.startProcessInstanceByKey(p.getId(), String.valueOf(businessId),variables);
+		
+		
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
+				.processInstanceId(proInstance.getId())//使用流程实例ID查询
+				.singleResult();
+		
+		
+		return pi.getId();
+		
+	}
+	
+	
+	/**8
+	 * 通过实例ID 获取 taskId
+	 * 完成
+	 * @param variables
+	 * @param businessId
+	 * @param instanceId
+	 */
+	public void taskComplateByInstanceId(Map<String, Object> variables,  String instanceId, String taskAssignne){
+		Task task = taskService.createTaskQuery().processInstanceId(instanceId).taskAssignee(taskAssignne).singleResult();
+		taskService.complete(task.getId(), variables);
+	}
+	
+	
+	
+	/***
 	 * 公共数据扭转方法
 	 * @param taskId  act_ru_task   ID_
 	 * @param variables 节点参数   例如：驳回/通过 处理人等 

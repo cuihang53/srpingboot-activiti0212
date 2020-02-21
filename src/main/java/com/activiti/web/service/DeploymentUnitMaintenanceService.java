@@ -45,8 +45,10 @@ public class DeploymentUnitMaintenanceService {
 			if(result!=null && result.getId()!=null){
 				Map<String,Object>  variables = new HashMap<>();
 				variables.put("inputUser", "范冰冰");
-				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentUnitMaintenance.getDeploymentId()).singleResult();
-				workflowService.saveStartProcess(variables, String.valueOf(result.getId()), p.getKey());
+//				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentUnitMaintenance.getDeploymentId()).singleResult();
+				String instanceId = workflowService.saveStartProcessByDeploymentId(variables, String.valueOf(result.getId()), deploymentUnitMaintenance.getDeploymentId());
+				variables.put("inputUser", "范冰冰-上级");
+				workflowService.taskComplateByInstanceId(variables, instanceId, "范冰冰");
 			}
 			dum.setStatus(1);//1 是审批中
 			deploymentUnitMaintenanceDao.save(dum);

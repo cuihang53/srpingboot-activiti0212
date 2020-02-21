@@ -143,6 +143,12 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         
+        <dependency>
+			<groupId>com.googlecode.log4jdbc</groupId>
+			<artifactId>log4jdbc</artifactId>
+			<version>1.2</version>
+		</dependency>
+        
         <!--swagger2 -->
 		<dependency>
 			<groupId>io.springfox</groupId>

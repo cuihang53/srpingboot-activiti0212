@@ -6,7 +6,7 @@ import java.util.Date;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.test.annotation.Rollback;
+//import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,7 @@ public class TimerTaskService {
 	
 	
 	
-	@Rollback(false)
+//	@Rollback(false)
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public TimerTask insert(DelegateExecution execution){
 //		TimerTaskService timerTaskService = SpringUtil.getBean("timerTaskService");
@@ -43,7 +43,7 @@ public class TimerTaskService {
 		return insert(job);
 	}
 	
-	@Rollback(false)
+//	@Rollback(false)
 	public TimerTask insert(TimerTask timerTask){
 		TimerTask result = timerTaskDao.save(timerTask);
 		System.out.println(result.getId() + timerTask.getRestUrl());

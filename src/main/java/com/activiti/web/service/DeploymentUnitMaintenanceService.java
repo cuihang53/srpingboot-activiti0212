@@ -4,8 +4,6 @@ package com.activiti.web.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,11 @@ public class DeploymentUnitMaintenanceService {
 	
 
 	
-	
+	private static final Map<String, String> map = new HashMap<String,String>();
+	static{
+		map.put("inputUser", "范冰冰");
+		map.put("leader", "冯小刚");
+	}
 	
 	public DeploymentUnitMaintenance insert(DeploymentUnitMaintenanceDto deploymentUnitMaintenance) {
 			//将dto数据转到entity中
@@ -41,11 +43,11 @@ public class DeploymentUnitMaintenanceService {
 			//启动流程实例
 			if(result!=null && result.getId()!=null){
 				Map<String,Object>  variables = new HashMap<>();
-				variables.put("inputUser", "范冰冰");
+				variables.put("inputUser", map.get("inputUser"));
 //				ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentUnitMaintenance.getDeploymentId()).singleResult();
 				String instanceId = workflowService.saveStartProcessByDeploymentId(variables, String.valueOf(result.getId()), deploymentUnitMaintenance.getDeploymentId());
-				variables.put("inputUser", "范冰冰-上级");
-				workflowService.taskComplateByInstanceId(variables, instanceId, "范冰冰");
+				variables.put("inputUser", map.get("leader"));
+				workflowService.taskComplateByInstanceId(variables, instanceId, map.get("inputUser"));
 			}
 			dum.setStatus(1);//1 是审批中
 			deploymentUnitMaintenanceDao.save(dum);

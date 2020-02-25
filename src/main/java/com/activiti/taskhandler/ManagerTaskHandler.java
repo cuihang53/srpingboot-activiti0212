@@ -12,6 +12,6 @@ public class ManagerTaskHandler implements TaskListener {
 	@Override
 	public void notify(DelegateTask delegateTask) {
 		//设置个人任务的办理人
-		delegateTask.setAssignee("cuihang1");
+		delegateTask.setAssignee("华谊兄弟");
 	}
 }

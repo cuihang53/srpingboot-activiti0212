@@ -38,11 +38,9 @@ public class ChildPageFormJson implements Serializable  {
 		return reasonForLeave;
 	}
 	public void setReasonForLeave(String reasonForLeave) {
-		reasonForLeave = reasonForLeave;
+		this.reasonForLeave = reasonForLeave;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	
 	@Override
 	public String toString() {
 		return "ChildPageFormJson [leave=" + leaves + ", leaveDays=" + leaveDays + ", leaveStartTime=" + leaveStartTime

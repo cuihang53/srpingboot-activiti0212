@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -275,11 +276,13 @@ public class WorkflowService {
 	public String  taskHisList(Integer pageNum, Integer pageSize) throws IOException{
 		List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()//历史任务表查询
 				//.processInstanceId(processInstanceId)//使用流程实例ID查询
-				.orderByProcessDefinitionId().asc()
+//				.orderByProcessDefinitionId().asc()
+				.orderByTaskCreateTime().desc()
+//				.orderByExecutionId()
 				.listPage(pageSize * (pageNum - 1), pageSize);
 		
 		
-		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
+		List<TaskVO> customTaskList = new LinkedList<TaskVO>();
 	    for (HistoricTaskInstance task : htiList) {
 	    	//TODO:查看自定义属性
 	    	ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(task.getProcessDefinitionId());

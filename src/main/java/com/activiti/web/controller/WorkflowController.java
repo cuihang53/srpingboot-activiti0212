@@ -12,6 +12,7 @@ import java.util.Map;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -213,6 +214,37 @@ public class WorkflowController extends BaseRestController{
 		return JsonUtil.obj2String(result);
 	}
 	
+	
+	
+	/**
+	 * 查看当前流程图（查看当前活动节点，并使用红色的框标注）
+	 */
+	@RequestMapping(value="/viewCurrentImage/task/{taskId}",method = RequestMethod.GET)
+	public String viewCurrentImage(@RequestBody WorkflowBean workflowBean){
+		//任务ID
+		String taskId = workflowBean.getTaskId();
+		/**一：查看流程图*/
+		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
+		ProcessDefinition pd = workflowService.findProcessDefinitionByTaskId(taskId);
+//		workflowAction_viewImage?deploymentId=<s:property value='#deploymentId'/>&imageName=<s:property value='#imageName'/>
+		
+		/**二：查看当前活动，获取当期活动对应的坐标x,y,width,height，将4个值存放到Map<String,Object>中*/
+		Map<String, Object> map = workflowService.findCoordingByTask(taskId);
+		Map<String, Object> cordingMap = new HashMap<String, Object>();
+		cordingMap.put("cording", map);
+		cordingMap.put("deploymentId", pd.getDeploymentId());
+		cordingMap.put("imageName", pd.getDiagramResourceName());
+		
+		JsonResult result = new JsonResult();
+		result.setContent(cordingMap);
+		
+		result.setStatus(HttpStatus.OK.value());
+		result.setCode(ResponseCode.SUCCESS.value());
+		
+		return JsonUtil.obj2String(result);
+	}
+	
+	
 	@RequestMapping(value="/test",method = RequestMethod.GET)
 	@ApiOperation(value = "远程任务")
 	public String test() {
@@ -280,25 +312,7 @@ public class WorkflowController extends BaseRestController{
 //		workflowService.saveSubmitTask(workflowBean);
 //		return "listTask";
 //	}
-//	
-//	/**
-//	 * 查看当前流程图（查看当前活动节点，并使用红色的框标注）
-//	 */
-//	@RequestMapping(value="/viewCurrentImage",method = RequestMethod.POST)
-//	public String viewCurrentImage(@RequestBody WorkflowBean workflowBean){
-//		//任务ID
-//		String taskId = workflowBean.getTaskId();
-//		/**一：查看流程图*/
-//		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
-//		ProcessDefinition pd = workflowService.findProcessDefinitionByTaskId(taskId);
-//		//workflowAction_viewImage?deploymentId=<s:property value='#deploymentId'/>&imageName=<s:property value='#imageName'/>
-////		ValueContext.putValueContext("deploymentId", pd.getDeploymentId());
-////		ValueContext.putValueContext("imageName", pd.getDiagramResourceName());
-//		/**二：查看当前活动，获取当期活动对应的坐标x,y,width,height，将4个值存放到Map<String,Object>中*/
-//		Map<String, Object> map = workflowService.findCoordingByTask(taskId);
-////		ValueContext.putValueContext("acs", map);
-//		return "image";
-//	}
+
 //	
 //	// 查看历史的批注信息
 //	@RequestMapping(value="/viewHisComment",method = RequestMethod.POST)

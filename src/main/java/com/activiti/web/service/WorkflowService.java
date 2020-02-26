@@ -587,9 +587,14 @@ public class WorkflowService {
 	
 	public ProcessDefinition findProcessDefinitionByTaskId(String taskId) {
 		//使用任务ID，查询任务对象
-		Task task = taskService.createTaskQuery()//
-					.taskId(taskId)//使用任务ID查询
-					.singleResult();
+//		Task task = taskService.createTaskQuery()//
+//					.taskId(taskId)//使用任务ID查询
+//					.singleResult();
+		
+		
+		HistoricTaskInstance task = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+		
+		
 		//获取流程定义ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//查询流程定义的对象

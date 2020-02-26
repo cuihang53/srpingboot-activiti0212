@@ -614,9 +614,14 @@ public class WorkflowService {
 		//存放坐标
 		Map<String, Object> map = new HashMap<String,Object>();
 		//使用任务ID，查询任务对象
-		Task task = taskService.createTaskQuery()//
-					.taskId(taskId)//使用任务ID查询
-					.singleResult();
+//		Task task = taskService.createTaskQuery()//
+//					.taskId(taskId)//使用任务ID查询
+//					.singleResult();
+//		
+		HistoricTaskInstance task = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+		
+		
+		
 		//获取流程定义的ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//获取流程定义的实体对象（对应.bpmn文件中的数据）
@@ -634,10 +639,10 @@ public class WorkflowService {
 		//获取当前活动对象
 		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID
 		//TODO: 流程走完需要判断 空指针异常获取坐标
-		map.put("x", activityImpl.getX());
-		map.put("y", activityImpl.getY());
-		map.put("width", activityImpl.getWidth());
-		map.put("height", activityImpl.getHeight());
+		map.put("x", pi==null? "" :activityImpl.getX());
+		map.put("y", pi==null? "" :activityImpl.getY());
+		map.put("width", pi==null? "" :activityImpl.getWidth());
+		map.put("height", pi==null? "" :activityImpl.getHeight());
 		return map;
 	}
 }

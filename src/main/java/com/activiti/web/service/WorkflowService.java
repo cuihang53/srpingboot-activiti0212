@@ -622,11 +622,13 @@ public class WorkflowService {
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//创建流程实例查询
 					.processInstanceId(processInstanceId)//使用流程实例ID查询
 					.singleResult();
+		
+
 		//获取当前活动的ID
 		String activityId = pi.getActivityId();
 		//获取当前活动对象
 		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID
-		//获取坐标
+		//TODO: 流程走完需要判断 空指针异常获取坐标
 		map.put("x", activityImpl.getX());
 		map.put("y", activityImpl.getY());
 		map.put("width", activityImpl.getWidth());

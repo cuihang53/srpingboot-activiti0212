@@ -138,15 +138,15 @@ public class WorkflowController extends BaseRestController{
 //	 * @throws Exception 
 //	 */
 	@ApiOperation(value = "查看流程图")
-	@RequestMapping(value="/viewImage/{deployId}/{imageName}",method = RequestMethod.GET)
-	public String viewImage(@PathVariable("deployId") String deployId, @PathVariable("imageName") String imageName) throws Exception{
+	@RequestMapping(value="/viewImage/{deploymentId}/{imageName}",method = RequestMethod.GET)
+	public String viewImage(@PathVariable("deploymentId") String deploymentId, @PathVariable("imageName") String imageName) throws Exception{
 		//1：获取页面传递的部署对象ID和资源图片名称
 		//部署对象ID
 //		String deploymentId = workflowBean.getDeploymentId();
 		//资源图片名称
 //		String imageName = workflowBean.getImageName();
 		//2：获取资源文件表（act_ge_bytearray）中资源图片输入流InputStream
-		InputStream in = workflowService.findImageInputStream(deployId,imageName);
+		InputStream in = workflowService.findImageInputStream(deploymentId,imageName);
 		//3：从response对象获取输出流
 		OutputStream out = response.getOutputStream();
 		//4：将输入流中的数据读取出来，写到输出流中
@@ -226,7 +226,6 @@ public class WorkflowController extends BaseRestController{
 		/**一：查看流程图*/
 		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
 		ProcessDefinition pd = workflowService.findProcessDefinitionByTaskId(taskId);
-//		workflowAction_viewImage?deploymentId=<s:property value='#deploymentId'/>&imageName=<s:property value='#imageName'/>
 		
 		/**二：查看当前活动，获取当期活动对应的坐标x,y,width,height，将4个值存放到Map<String,Object>中*/
 		Map<String, Object> map = workflowService.findCoordingByTask(taskId);

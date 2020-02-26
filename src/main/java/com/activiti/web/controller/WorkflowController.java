@@ -220,9 +220,9 @@ public class WorkflowController extends BaseRestController{
 	 * 查看当前流程图（查看当前活动节点，并使用红色的框标注）
 	 */
 	@RequestMapping(value="/viewCurrentImage/task/{taskId}",method = RequestMethod.GET)
-	public String viewCurrentImage(@RequestBody WorkflowBean workflowBean){
+	public String viewCurrentImage(@PathVariable("taskId") String taskId){
 		//任务ID
-		String taskId = workflowBean.getTaskId();
+//		String taskId = workflowBean.getTaskId();
 		/**一：查看流程图*/
 		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
 		ProcessDefinition pd = workflowService.findProcessDefinitionByTaskId(taskId);

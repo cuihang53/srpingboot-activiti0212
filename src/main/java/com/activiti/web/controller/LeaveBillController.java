@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.activiti.common.JsonResult;
-import com.activiti.common.ResponseCode;
 import com.activiti.dto.LeaveBillDto;
 import com.activiti.entity.LeaveBill;
 import com.activiti.utils.JsonUtil;
@@ -34,10 +33,10 @@ public class LeaveBillController extends BaseRestController{
 			LeaveBill leave = leaveBillService.insert(leaveBill);
 			result.setContent(leave);
 			result.setStatus(HttpStatus.OK.value());
-			result.setCode(ResponseCode.SUCCESS.value());
+			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){
 			result.setStatus(HttpStatus.BAD_REQUEST.value());
-			result.setCode(ResponseCode.ERROR.value());
+			result.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
 			result.setErrMsg(e.toString());
 		}
 		return JsonUtil.obj2String(result);

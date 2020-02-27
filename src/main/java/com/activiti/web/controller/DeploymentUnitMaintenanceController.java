@@ -1,7 +1,5 @@
 package com.activiti.web.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.activiti.common.JsonResult;
-import com.activiti.common.ResponseCode;
 import com.activiti.dto.DeploymentUnitMaintenanceDto;
 import com.activiti.entity.DeploymentUnitMaintenance;
 import com.activiti.utils.JsonUtil;
@@ -39,10 +36,10 @@ public class DeploymentUnitMaintenanceController extends BaseRestController {
 			DeploymentUnitMaintenance deploymentUnitMaintenance1 = 	deploymentUnitMaintenanceService.insert(deploymentUnitMaintenance);
 			result.setContent(deploymentUnitMaintenance1);
 			result.setStatus(HttpStatus.OK.value());
-			result.setCode(ResponseCode.SUCCESS.value());
+			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){
 			result.setStatus(HttpStatus.BAD_REQUEST.value());
-			result.setCode(ResponseCode.ERROR.value());
+			result.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
 			result.setErrMsg(e.toString());
 		}
 		return JsonUtil.obj2String(result);
@@ -57,10 +54,10 @@ public class DeploymentUnitMaintenanceController extends BaseRestController {
 			result.setContent(deploymentUnitMaintenance1);
 			
 			result.setStatus(HttpStatus.OK.value());
-			result.setCode(ResponseCode.SUCCESS.value());
+			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){
 			result.setStatus(HttpStatus.BAD_REQUEST.value());
-			result.setCode(ResponseCode.ERROR.value());
+			result.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
 			result.setErrMsg(e.toString());
 		}
 		return JsonUtil.obj2String(result);

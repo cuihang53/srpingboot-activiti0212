@@ -12,24 +12,35 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @JsonIgnoreProperties
-public class JsonResult implements Serializable {
+public class JsonResult<T> implements Serializable {
 
-    @ApiModelProperty(value = "返回码：success，error，nologin，noallow")
-    private String code;
+    
+	private int status;
+
+	private String code;
 
     @ApiModelProperty(value = "返回错误信息")
     private String errMsg;
 
     @ApiModelProperty(value = "返回的数据，任意类型")
-    private Object content;
+    private T content;
+    
+    
+    public JsonResult() {
+    }
 
-    @ApiModelProperty(value = "返回的数据条数，分页时是总条数")
-    private Long size;
+    public JsonResult(boolean success,String errorMsg) {
+        this.status = success ? ResultCode.OK.getCode() : ResultCode.BAD_REQUEST.getCode();
+        this.code = success ? ResultCode.OK.getMessage() : ResultCode.BAD_REQUEST.getMessage();
+        this.errMsg = success? null : errorMsg;
+    }
 
-    @ApiModelProperty(value = "返回的总页数，分页时使用")
-    private Long totalPages;
-
-    private int status;
+    
+    public JsonResult(boolean success, T data) {
+    	 this.status = success ? ResultCode.OK.getCode() : ResultCode.BAD_REQUEST.getCode();
+         this.code = success ? ResultCode.OK.getMessage() : ResultCode.BAD_REQUEST.getMessage();
+         this.content = data;
+    }
 
     
     

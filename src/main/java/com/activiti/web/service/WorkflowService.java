@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 
 import com.activiti.common.CommentResponse;
 import com.activiti.common.JsonResult;
-import com.activiti.common.ResponseCode;
 import com.activiti.entity.LeaveBill;
 import com.activiti.entity.WorkflowBean;
 import com.activiti.utils.JsonUtil;
@@ -262,7 +261,7 @@ public class WorkflowService {
 		JsonResult json = new JsonResult();
 		json.setContent(result);
 		json.setStatus(HttpStatus.OK.value());
-		json.setCode(ResponseCode.SUCCESS.value());
+		json.setCode(HttpStatus.OK.getReasonPhrase());
 		return JsonUtil.obj2String(json);
 	}
 	
@@ -329,7 +328,7 @@ public class WorkflowService {
 		JsonResult json = new JsonResult();
 		json.setContent(result);
 		json.setStatus(HttpStatus.OK.value());
-		json.setCode(ResponseCode.SUCCESS.value());
+		json.setCode(HttpStatus.OK.getReasonPhrase());
 		return JsonUtil.obj2String(json);
 		
 	}

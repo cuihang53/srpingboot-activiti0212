@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.activiti.common.DeploymentResponse;
 import com.activiti.common.JsonResult;
-import com.activiti.common.ResponseCode;
 import com.activiti.dto.WorkflowDto;
 import com.activiti.entity.WorkflowBean;
 import com.activiti.utils.JsonUtil;
@@ -78,7 +77,7 @@ public class WorkflowController extends BaseRestController{
 		result.setContent(map);
 		
 		result.setStatus(HttpStatus.OK.value());
-		result.setCode(ResponseCode.SUCCESS.value());
+		result.setCode(HttpStatus.OK.getReasonPhrase());
 //		return JsonUtil.obj2String(result);
 		return map;
 	}
@@ -188,10 +187,10 @@ public class WorkflowController extends BaseRestController{
 		try{
 			workflowService.saveStartProcess(workflow.getVariables(), workflow.getBusinessId(), workflow.getInstanceKey());
 			result.setStatus(HttpStatus.OK.value());
-			result.setCode(ResponseCode.SUCCESS.value());
+			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){
 			result.setStatus(HttpStatus.BAD_REQUEST.value());
-			result.setCode(ResponseCode.ERROR.value());
+			result.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
 			result.setErrMsg(e.toString());
 		}
 		return JsonUtil.obj2String(result);
@@ -205,10 +204,10 @@ public class WorkflowController extends BaseRestController{
 		try{
 			workflowService.taskComplete(workflow.getTaskId(), workflow.getVariables());
 			result.setStatus(HttpStatus.OK.value());
-			result.setCode(ResponseCode.SUCCESS.value());
+			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){
 			result.setStatus(HttpStatus.BAD_REQUEST.value());
-			result.setCode(ResponseCode.ERROR.value());
+			result.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
 			result.setErrMsg(e.toString());
 		}
 		return JsonUtil.obj2String(result);
@@ -233,12 +232,12 @@ public class WorkflowController extends BaseRestController{
 		cordingMap.put("cording", map);
 		cordingMap.put("deploymentId", pd.getDeploymentId());
 		cordingMap.put("imageName", pd.getDiagramResourceName());
-		
+
 		JsonResult result = new JsonResult();
 		result.setContent(cordingMap);
 		
 		result.setStatus(HttpStatus.OK.value());
-		result.setCode(ResponseCode.SUCCESS.value());
+		result.setCode(HttpStatus.OK.getReasonPhrase());
 		
 		return JsonUtil.obj2String(result);
 	}

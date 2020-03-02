@@ -42,6 +42,10 @@ public class JsonResult<T> implements Serializable {
          this.content = data;
     }
 
+    public JsonResult(boolean success, ResultCode resultEnum) {
+        this.status = success ? ResultCode.SUCCESS.getCode() : (resultEnum == null ? ResultCode.COMMON_FAIL.getCode() : resultEnum.getCode());
+        this.code = success ? ResultCode.SUCCESS.getMessage() : (resultEnum == null ? ResultCode.COMMON_FAIL.getMessage() : resultEnum.getMessage());
+    }
     
     
 }

@@ -632,16 +632,20 @@ public class WorkflowService {
 					.processInstanceId(processInstanceId)//使用流程实例ID查询
 					.singleResult();
 		
-
+		
+		ActivityImpl activityImpl =  null;
+		if(pi != null){
+			String activityId =pi.getActivityId();
+			activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID
+		}
+		
 		//获取当前活动的ID
-		String activityId = pi.getActivityId();
 		//获取当前活动对象
-		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID
 		//TODO: 流程走完需要判断 空指针异常获取坐标
-		map.put("x", pi==null? "" :activityImpl.getX());
-		map.put("y", pi==null? "" :activityImpl.getY());
-		map.put("width", pi==null? "" :activityImpl.getWidth());
-		map.put("height", pi==null? "" :activityImpl.getHeight());
+		map.put("x", activityImpl==null? "" :activityImpl.getX());
+		map.put("y", activityImpl==null? "" :activityImpl.getY());
+		map.put("width", activityImpl==null? "" :activityImpl.getWidth());
+		map.put("height", activityImpl==null? "" :activityImpl.getHeight());
 		return map;
 	}
 }

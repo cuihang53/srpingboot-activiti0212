@@ -28,7 +28,7 @@ public class LeaveBillController extends BaseRestController{
 	@RequestMapping(value="/add",method = RequestMethod.POST)
 	@ApiOperation(value = "新增请假单")
 	public String insert(@ApiParam(required = true) @RequestBody LeaveBillDto leaveBill) {
-		JsonResult result = new JsonResult();
+		JsonResult<LeaveBill> result = new JsonResult<LeaveBill>();
 		try{
 			LeaveBill leave = leaveBillService.insert(leaveBill);
 			result.setContent(leave);

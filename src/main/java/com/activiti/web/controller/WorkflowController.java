@@ -73,7 +73,7 @@ public class WorkflowController extends BaseRestController{
 		map.put("depList", list);
 //		map.put("pdList", pdList);
 		
-		JsonResult result = new JsonResult();
+		JsonResult<Map<String, Object>> result = new JsonResult<Map<String, Object>>();
 		result.setContent(map);
 		
 		result.setStatus(HttpStatus.OK.value());
@@ -183,7 +183,7 @@ public class WorkflowController extends BaseRestController{
 	@RequestMapping(value="/startProcess",method = RequestMethod.POST)
 	@ApiOperation(value = "新增任务实例")
 	public String startProcess(@ApiParam(required = true) @RequestBody WorkflowDto workflow) {
-		JsonResult result = new JsonResult();
+		JsonResult<?> result = new JsonResult<>();
 		try{
 			workflowService.saveStartProcess(workflow.getVariables(), workflow.getBusinessId(), workflow.getInstanceKey());
 			result.setStatus(HttpStatus.OK.value());
@@ -200,7 +200,7 @@ public class WorkflowController extends BaseRestController{
 	@RequestMapping(value="/taskComplete",method = RequestMethod.POST)
 	@ApiOperation(value = "处理待办任务")
 	public String taskComplete(@ApiParam(required = true) @RequestBody WorkflowDto workflow) {
-		JsonResult result = new JsonResult();
+		JsonResult<?> result = new JsonResult<>();
 		try{
 			workflowService.taskComplete(workflow.getTaskId(), workflow.getVariables());
 			result.setStatus(HttpStatus.OK.value());
@@ -233,7 +233,7 @@ public class WorkflowController extends BaseRestController{
 		cordingMap.put("deploymentId", pd.getDeploymentId());
 		cordingMap.put("imageName", pd.getDiagramResourceName());
 
-		JsonResult result = new JsonResult();
+		JsonResult<Map<String, Object>> result = new JsonResult<Map<String, Object>>();
 		result.setContent(cordingMap);
 		
 		result.setStatus(HttpStatus.OK.value());

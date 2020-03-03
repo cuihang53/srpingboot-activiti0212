@@ -18,7 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.activiti.explorer.ExtensionUserTaskParseHandler;
 
 @Configuration
-public class ActitytiDataSourceConfig extends AbstractProcessEngineAutoConfiguration {
+public class ActivityDataSourceConfig extends AbstractProcessEngineAutoConfiguration {
  
  
     @Autowired

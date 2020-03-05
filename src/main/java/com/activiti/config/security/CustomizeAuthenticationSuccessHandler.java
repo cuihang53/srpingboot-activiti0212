@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.activiti.common.JsonResult;
@@ -31,7 +32,13 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         //更新用户表上次登录时间、更新人、更新时间等字段
+//    	SecurityContextHolder是spring security最基本的组件。用于存储安全上下文（security context）的信息。
+//    	当前操作的用户是谁，该用户是否已经被认证，他拥有哪些角色权限等这些都被保存在SecurityContextHolder中。
+//    	SecurityContextHolder默认是使用ThreadLocal实现的，这样就保证了本线程内所有的方法都可以获得SecurityContext对象。
         User userDetails = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String ip =  ((WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRemoteAddress();
+         
         SysUser sysUser = sysUserDao.findByUserName(userDetails.getUsername());
         sysUser.setLastLoginTime(new Date());
         sysUser.setUpdateTime(new Date());

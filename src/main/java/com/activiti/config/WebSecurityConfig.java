@@ -21,6 +21,9 @@ import com.activiti.config.security.CustomizeAuthenticationSuccessHandler;
 import com.activiti.config.security.CustomizeFilterInvocationSecurityMetadataSource;
 import com.activiti.config.security.CustomizeLogoutSuccessHandler;
 import com.activiti.config.security.CustomizeSessionInformationExpiredStrategy;
+//import com.activiti.config.security.TokenLoginFilter;
+//import com.activiti.config.security.TokenLogoutHandler;
+//import com.activiti.config.security.TokenManager;
 import com.activiti.web.service.CustomizeUserDetailService;
 
 @Configuration
@@ -53,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
 //	  权限拒绝处理逻辑
     @Autowired
-    CustomizeAccessDeniedHandler accessDeniedHandler;
+    private CustomizeAccessDeniedHandler accessDeniedHandler;
 
     //访问决策管理器
     @Autowired
@@ -66,6 +69,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomizeAbstractSecurityInterceptor securityInterceptor;
 
+    
+//    @Autowired
+//    private TokenManager tokenManager;
     
     //获取用户账号密码及权限信息
 	@Bean
@@ -118,7 +124,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         	permitAll().//允许所有用户
         	logoutSuccessHandler(logoutSuccessHandler).//登出成功处理逻辑
         	deleteCookies("JSESSIONID")//登出之后删除cookie
-    	
+    	//token 认证
+//        	.addLogoutHandler(new TokenLogoutHandler(tokenManager)).and()
+//            .addFilter(new TokenLoginFilter(authenticationManager(), tokenManager))
+//            .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager)).httpBasic();
+        	
 //		一个账户只能登录一个人， //否则进入   CustomizeSessionInformationExpiredStrategy
 //      我电脑上用postman登录
 //      我电脑上请求资源接口，可以请求，如下左图
@@ -127,6 +137,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	.and().sessionManagement().
          maximumSessions(1).
          expiredSessionStrategy(sessionInformationExpiredStrategy);
+    	
     	
     	
     	http.addFilterBefore(securityInterceptor, FilterSecurityInterceptor.class);

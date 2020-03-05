@@ -38,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.activiti.common.CommentResponse;
+import com.activiti.common.Constants;
 import com.activiti.common.JsonResult;
 import com.activiti.entity.LeaveBill;
 import com.activiti.entity.WorkflowBean;
@@ -90,7 +91,10 @@ public class WorkflowService {
 		return list;
 	}
 	
-	/**查询流程定义的信息，对应表（act_re_procdef）*/
+	
+	/**
+	 * 查询流程定义的信息，对应表（act_re_procdef）
+	 * */
 	public List<ProcessDefinition> findProcessDefinitionList() {
 		List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()//创建流程定义查询
 							.orderByProcessDefinitionVersion()
@@ -111,14 +115,14 @@ public class WorkflowService {
 		return repositoryService.getResourceAsStream(deploymentId, imageName);
 	}
 	
-	/**使用部署对象ID，删除流程定义*/
 	
+	/**使用部署对象ID，删除流程定义*/
 	public void deleteProcessDefinitionByDeploymentId(String deploymentId) {
 		repositoryService.deleteDeployment(deploymentId, true);
 	}
 	
-	/**更新请假状态，启动流程实例，让启动的流程实例关联业务*/
 	
+	/**更新请假状态，启动流程实例，让启动的流程实例关联业务*/
 //	public void saveStartProcess(WorkflowBean workflowBean) {
 //		//1：获取请假单ID，使用请假单ID，查询请假单的对象LeaveBill
 ////		Long id = workflowBean.getId();
@@ -158,30 +162,43 @@ public class WorkflowService {
 	public String saveStartProcessByDeploymentId(Map<String, Object> variables, String businessId, String deploymentId){
 		ProcessDefinition p = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).singleResult();
 		ProcessInstance proInstance = runtimeService.startProcessInstanceByKey(p.getKey(), String.valueOf(businessId),variables);
-		
-		
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
 				.processInstanceId(proInstance.getId())//使用流程实例ID查询
 				.singleResult();
-		
-		
 		return pi.getId();
-		
 	}
 	
 	
-	/**8
-	 * 通过实例ID 获取 taskId
-	 * 完成
+	/**
+	 * 通过实例ID(instanceId) 获取 taskId
+	 * 可以对组任务和个人任务处理
 	 * @param variables
 	 * @param businessId
 	 * @param instanceId
 	 */
 	public void taskComplateByInstanceId(Map<String, Object> variables,  String instanceId, String taskAssignne){
 		Task task = taskService.createTaskQuery().processInstanceId(instanceId).taskAssignee(taskAssignne).singleResult();
+		//设置下一步骤看到信息 一般是业务数据
+//		taskService.setVariable(task.getId(),"taskform",taskform);
 		taskService.complete(task.getId(), variables);
 	}
 	
+	
+//	/***
+//	 * 通过实例ID发起任务并提交，用于流程第一步处理，也就是申请人处理
+//	 * 当前方法适用于第二步是组任务的流程
+//	 * @param variables   例如：{"groupUsers":"1,2,3,4,5,6,7"}
+//	 * @param instanceId
+//	 * @param taskAssignne
+//	 */
+//	public void completeGroupTask(Map<String, Object> variables,  String instanceId, String taskAssignne){
+//		Task task = taskService.createTaskQuery().processInstanceId(instanceId).taskAssignee(taskAssignne).singleResult();
+////		taskService.complete(task.getId(), variables);
+//		//设置下一步骤看到信息 一般是业务数据
+////		taskService.setVariable(task.getId(),"taskform",taskform);
+//		
+//		taskService.complete(task.getId(),variables);//完成任务
+//	}
 	
 	
 	/***
@@ -191,7 +208,7 @@ public class WorkflowService {
 	 * @return ProcessInstance 流程变量实例 用于判断流程是否走完  用作改变业务代码工单状态
 	 */
 //	public ProcessInstance taskComplete(String taskId, Map<String, Object> variables){
-		public void taskComplete(String taskId, Map<String, Object> variables){
+		public void taskComplete(String taskId, Map<String, Object> variables, Map<String,String> businessMap){
 			//查询任务
 			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 			//测试script task
@@ -211,29 +228,72 @@ public class WorkflowService {
 				}
 			}
 			//end
-			//批注
-			Authentication.setAuthenticatedUserId("cuihang");
-			taskService.addComment(taskId, processInstanceId, "非常优秀");
+			//设置当前审批人的用户ID
+			Authentication.setAuthenticatedUserId(businessMap.get("userId"));
+			taskService.addComment(taskId, processInstanceId, businessMap.get("comment"));
 			//完成任务
 			//variables.put("inputUser","张三")
 			//当前流程图使用listeners 监听的 com.activiti.taskhandler.ManagerTaskHandler 指定下个节点审批人
+			//如果是组用户 variables中添加  {"groupUser", "具体业务数据"}
 			taskService.complete(taskId, variables);
-			
 			//查询act_ru_execution表 如果为空表示流程结束
 //			ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
 //							.processInstanceId(processInstanceId)//使用流程实例ID查询
 //							.singleResult();
 //			return pi;
-			
 	}
+	
+		
+	/**
+	 * 2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>
+	 * */
+	public String findUserTaskListByName(String assignee, Integer offset, Integer limit) {
+		//分页结果
+		List<Task> taskList = taskService.createTaskQuery()
+					.taskAssignee(assignee)//指定个人任务查询
+					.taskCandidateUser(assignee)//参与者，组任务查询
+					.orderByTaskCreateTime().asc()
+					.listPage(offset, limit); //分页
+		
+		//Task是懒加载的对象 直接转json会报错(lazy loading outside command context  activiti)，需要copy数据
+		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
+	    for (Task task : taskList) {
+	    	TaskVO to = new TaskVO();
+	        to.setTaskId(task.getId());
+	        to.setTaskDefinitionKey(task.getTaskDefinitionKey());
+	        to.setTaskName(task.getName());
+	        to.setAssignee(task.getAssignee());
+	        to.setCreateTime(task.getCreateTime());
+	        to.setInstanceKey(task.getProcessInstanceId());
+	        customTaskList.add(to);
+	    }
+		//totalCount
+		Long count  = taskService.createTaskQuery()//
+				.taskAssignee(assignee)
+				.taskCandidateUser(assignee)
+				.orderByTaskCreateTime().asc()
+				.count();
+		//构造返回数据类型
+		Map<String,Object> result = new HashMap<>();
+		result.put("taskList", customTaskList);
+		result.put("count", count);
+		JsonResult<Map<String,Object>> json = new JsonResult<Map<String,Object>>();
+		json.setContent(result);
+		json.setStatus(HttpStatus.OK.value());
+		json.setCode(HttpStatus.OK.getReasonPhrase());
+		return JsonUtil.obj2String(json);
+	}
+	
+	
+	
 	
 	/**
 	 * 2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>
 	 * */
-	public String findTaskListByName(String assignee, Integer offset, Integer limit) {
+	public String findUserGroupTaskListByName(String assignee, Integer offset, Integer limit) {
 		//分页结果
 		List<Task> taskList = taskService.createTaskQuery()
-					.taskAssignee(assignee)//指定个人任务查询
+					.taskCandidateUser(assignee)//参与者，组任务查询
 					.orderByTaskCreateTime().asc()
 					.listPage(offset, limit); //分页
 		
@@ -258,12 +318,17 @@ public class WorkflowService {
 		Map<String,Object> result = new HashMap<>();
 		result.put("taskList", customTaskList);
 		result.put("count", count);
-		JsonResult json = new JsonResult();
+		JsonResult<Map<String,Object>> json = new JsonResult<Map<String,Object>>();
 		json.setContent(result);
 		json.setStatus(HttpStatus.OK.value());
 		json.setCode(HttpStatus.OK.getReasonPhrase());
 		return JsonUtil.obj2String(json);
 	}
+	
+	
+	
+	
+	
 	
 	/****
 	 *  历史列表 包含当前正在进行的节点 所以只需要查历史列表
@@ -290,18 +355,20 @@ public class WorkflowService {
 //	    		System.out.println("url:"+activiti.getProperty("urlType"));
 //	    	}
 	    	HistoricProcessInstance  hp=  historyService.createHistoricProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
-	    	String url = hisurl(task.getProcessInstanceId(), task.getId());
-	    	
-	    	
+	    	String url = hisurl1(task.getProcessInstanceId(), task.getId());
+//	    	String groupRole = map.get("grouprole");
+//	    	if(groupRole != null){
+//	    		//TODO:1.拿到通过grouprole拿到当前节点可以看到的人
+//	    		//	   2.当前登陆人和第一步得到的人进行对比，如果在1中那么可以展示否则不能展示
+////	    		if(users == null){
+////	    		}
+//	    	}
 	    	//批注
 	    	List<Comment> list = taskService.getTaskComments(task.getId());
 	    	List<CommentResponse> comments = new ArrayList<>();
 	    	for(Comment comment : list){
 	    		comments.add(new CommentResponse(comment));
 	    	}
-	    	
-	    	System.out.println(url);
-	    	
 	    	//查看自定义属性结束
 	    	TaskVO to = new TaskVO();
 	        to.setTaskId(task.getId());
@@ -325,18 +392,17 @@ public class WorkflowService {
 		Map<String,Object> result = new HashMap<>();
 		result.put("taskList", customTaskList);
 		result.put("count", count);
-		JsonResult json = new JsonResult();
+		JsonResult<Map<String,Object>> json = new JsonResult<Map<String,Object>>();
 		json.setContent(result);
 		json.setStatus(HttpStatus.OK.value());
 		json.setCode(HttpStatus.OK.getReasonPhrase());
 		return JsonUtil.obj2String(json);
-		
 	}
 	
-	
-	public String hisurl(String procInstanceId, String taskId) throws IOException{
+
+	public String  hisurl1(String procInstanceId, String taskId) throws IOException{
 	     //1.通过procInstanceId获取所有历史节点
-	     List<HistoricActivityInstance> activityInstances =historyService
+		 List<HistoricActivityInstance> activityInstances =historyService
 	               .createHistoricActivityInstanceQuery()
 	               .processInstanceId(procInstanceId)
 	               .list();
@@ -356,8 +422,48 @@ public class WorkflowService {
 			          //5.循环所有节点，匹配对应节点，输出其属性
 			          if(activitiId.equals(activityImplid)){
 			        	  System.out.println("当前任务："+activityImpl.getProperty("name")+
-			        			  ";自定义属性值:"+activityImpl.getProperty("approvetype")); //输出某个节点的某种属性
-			        	  return String.valueOf(activityImpl.getProperty("approvetype"));
+			        			  ";自定义属性值:"+activityImpl.getProperty(Constants.EXT_APPROVE_URL)); //输出某个节点的某种属性
+			        	  
+			        	  return String.valueOf(activityImpl.getProperty(Constants.EXT_APPROVE_URL));
+			          }
+		         }
+	         }
+	     }
+	     return null;
+    }
+	
+	
+	public Map<String,String> hisurl(String procInstanceId, String taskId) throws IOException{
+	     //1.通过procInstanceId获取所有历史节点
+	     List<HistoricActivityInstance> activityInstances =historyService
+	               .createHistoricActivityInstanceQuery()
+	               .processInstanceId(procInstanceId)
+	               .list();
+	   
+	     for(HistoricActivityInstance act :activityInstances) {
+	    	 Map<String,String> map = new HashMap<>();
+	    	 
+	      //2.然后根据当前任务获取当前流程的流程定义，然后根据流程定义获得所有的节点：
+	         ProcessDefinitionEntity def = (ProcessDefinitionEntity) ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(act.getProcessDefinitionId());
+	         List<ActivityImpl> activitiList = def.getActivities(); //rs是指RepositoryService的实例
+	         //3.获取当前节点的任务id
+	         String id =act.getTaskId();
+	         if(taskId.equals(id)&&id!=null){
+	          //4.匹配对应任务id的节点id
+		          String activitiId=act.getActivityId();
+		    
+		         for(ActivityImpl activityImpl:activitiList){
+			          String activityImplid = activityImpl.getId();
+			          //5.循环所有节点，匹配对应节点，输出其属性
+			          if(activitiId.equals(activityImplid)){
+			        	  System.out.println("当前任务："+activityImpl.getProperty("name")+
+			        			  ";自定义属性值:"+activityImpl.getProperty(Constants.EXT_APPROVE_URL)); //输出某个节点的某种属性
+			        	  
+			        	  
+			        	  
+			        	  map.put("url", String.valueOf(activityImpl.getProperty(Constants.EXT_APPROVE_URL)));
+			        	  map.put("grouprole", String.valueOf(activityImpl.getProperty(Constants.EXT_APPROVE_GROUP_ROLE)));
+			        	  return map;
 			          }
 		         }
 	         }
@@ -375,7 +481,6 @@ public class WorkflowService {
 		String url = formData.getFormKey();
 		return url;
 	}
-	
 	
 	
 	public String findServiceTaskProperty(String proDefId, String activitiId) {
@@ -420,6 +525,7 @@ public class WorkflowService {
 		return leaveBill;
 	}
 	
+	
 	/**
 	 * 二：已知任务ID，查询ProcessDefinitionEntiy对象，从而获取当前任务完成之后的连线名称，并放置到List<String>集合中
 	 * */
@@ -459,6 +565,7 @@ public class WorkflowService {
 		}
 		return list;
 	}
+	
 	
 	/**
 	 * 指定连线的名称完成任务

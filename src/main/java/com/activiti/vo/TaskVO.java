@@ -11,6 +11,7 @@ public class TaskVO {
 	private String taskDefinitionKey;
 	private String taskName;
 	private String assignee;
+	private String groupRole;
 	private Date createTime;
 	private String instanceKey;
 	private String url;

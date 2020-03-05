@@ -167,7 +167,9 @@ public class WorkflowController extends BaseRestController{
 	@ApiOperation(value = "登陆人的代办任务")
 	@RequestMapping(value="/listTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
 	public String listTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
-		String result = workflowService.findTaskListByName("zhangsan",offset,limit);
+		Map<String,String> map = new HashMap<>();
+		map.put("user", "zhangsan");
+		String result = workflowService.findUserTaskListByName(map.get("user"),offset,limit);
 		return result;
 	}
 
@@ -202,7 +204,7 @@ public class WorkflowController extends BaseRestController{
 	public String taskComplete(@ApiParam(required = true) @RequestBody WorkflowDto workflow) {
 		JsonResult<?> result = new JsonResult<>();
 		try{
-			workflowService.taskComplete(workflow.getTaskId(), workflow.getVariables());
+			workflowService.taskComplete(workflow.getTaskId(), workflow.getVariables(),new HashMap<>());
 			result.setStatus(HttpStatus.OK.value());
 			result.setCode(HttpStatus.OK.getReasonPhrase());
 		}catch(Exception e){

@@ -169,7 +169,7 @@ public class WorkflowController extends BaseRestController{
 	public String listTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
 		Map<String,String> map = new HashMap<>();
 		map.put("user", "zhangsan");
-		String result = workflowService.findUserTaskListByName(map.get("user"),offset,limit);
+		String result = workflowService.findUserGroupTaskListByName(map.get("user"),offset,limit);
 		return result;
 	}
 

@@ -24,6 +24,7 @@ public class TimerTaskService {
 	
 	
 //	@Rollback(false)
+	@SuppressWarnings("deprecation")
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public TimerTask insert(DelegateExecution execution){
 //		TimerTaskService timerTaskService = SpringUtil.getBean("timerTaskService");

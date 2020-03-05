@@ -18,6 +18,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "deployment_unit_maintenance")
 public class DeploymentUnitMaintenance implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id",nullable = false,unique = true)

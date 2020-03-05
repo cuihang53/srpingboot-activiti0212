@@ -48,7 +48,8 @@ public class ActivitiModelController implements RestServiceController<Model, Str
     /**
      * 新建一个空模型
      */
-    @RequestMapping("/create")
+    @SuppressWarnings("deprecation")
+	@RequestMapping("/create")
     public void newModel(HttpServletResponse response) throws IOException {
         RepositoryService repositoryService = processEngine.getRepositoryService();
         //初始化一个空模型

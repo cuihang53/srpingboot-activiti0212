@@ -31,7 +31,7 @@ public class DeploymentUnitMaintenanceController extends BaseRestController {
 	@RequestMapping(value="/add",method = RequestMethod.POST)
 	@ApiOperation(value = "新增部署单元维护")
 	public String insert(@ApiParam(required = true)@RequestBody(required=false) DeploymentUnitMaintenanceDto deploymentUnitMaintenance) {
-		JsonResult result = new JsonResult();
+		JsonResult<DeploymentUnitMaintenance> result = new JsonResult<DeploymentUnitMaintenance>();
 		try{
 			DeploymentUnitMaintenance deploymentUnitMaintenance1 = 	deploymentUnitMaintenanceService.insert(deploymentUnitMaintenance);
 			result.setContent(deploymentUnitMaintenance1);
@@ -48,7 +48,7 @@ public class DeploymentUnitMaintenanceController extends BaseRestController {
 	@RequestMapping(value="/updata",method = RequestMethod.POST)
 	@ApiOperation(value = "更新部署单元维护")
 	public String updata(@ApiParam(required = true) @RequestBody DeploymentUnitMaintenanceDto entity) {
-		JsonResult result = new JsonResult();
+		JsonResult<DeploymentUnitMaintenance> result = new JsonResult<DeploymentUnitMaintenance>();
 		try{
 			DeploymentUnitMaintenance deploymentUnitMaintenance1 = deploymentUnitMaintenanceService.updata(entity);
 			result.setContent(deploymentUnitMaintenance1);

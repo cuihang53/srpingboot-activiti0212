@@ -5,7 +5,6 @@ import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.bpmn.parser.handler.UserTaskParseHandler;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;

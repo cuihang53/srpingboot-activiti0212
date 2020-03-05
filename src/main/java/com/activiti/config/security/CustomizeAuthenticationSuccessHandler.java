@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.activiti.common.JsonResult;
@@ -37,7 +36,7 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
 //    	SecurityContextHolder默认是使用ThreadLocal实现的，这样就保证了本线程内所有的方法都可以获得SecurityContext对象。
         User userDetails = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        String ip =  ((WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRemoteAddress();
+//        String ip =  ((WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRemoteAddress();
          
         SysUser sysUser = sysUserDao.findByUserName(userDetails.getUsername());
         sysUser.setLastLoginTime(new Date());

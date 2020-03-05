@@ -7,6 +7,10 @@ import java.util.Date;
 import lombok.Data;
 @Data
 public class DeploymentUnitMaintenanceDto implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private 	Integer  	id;						//部署单元维护id
 	private     Integer     leaveBillId;			//请假单id
 	private 	String 		applicant;				// 申请人

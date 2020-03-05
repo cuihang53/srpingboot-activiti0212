@@ -67,6 +67,9 @@ public class WorkflowService {
 	@Autowired
 	private HistoryService historyService;
 	
+//	@Autowired
+//	private IdentityService identityService;
+	
 
 	/**部署流程定义*/
 	public void saveNewDeploye(File file, String filename) {
@@ -148,6 +151,7 @@ public class WorkflowService {
 	
 	
 	public void saveStartProcess(Map<String, Object> variables, String businessId, String instanceKey){
+		
 		runtimeService.startProcessInstanceByKey(instanceKey, String.valueOf(businessId),variables);
 	}
 	
@@ -246,12 +250,13 @@ public class WorkflowService {
 		
 	/**
 	 * 2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>
+	 * 个人任务
 	 * */
 	public String findUserTaskListByName(String assignee, Integer offset, Integer limit) {
 		//分页结果
 		List<Task> taskList = taskService.createTaskQuery()
 					.taskAssignee(assignee)//指定个人任务查询
-					.taskCandidateUser(assignee)//参与者，组任务查询
+//					.taskCandidateUser(assignee)//参与者，组任务查询
 					.orderByTaskCreateTime().asc()
 					.listPage(offset, limit); //分页
 		
@@ -284,11 +289,8 @@ public class WorkflowService {
 		return JsonUtil.obj2String(json);
 	}
 	
-	
-	
-	
 	/**
-	 * 2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>
+	 * 用户组任务，通过候选人去查询  canditateUser
 	 * */
 	public String findUserGroupTaskListByName(String assignee, Integer offset, Integer limit) {
 		//分页结果
@@ -345,17 +347,16 @@ public class WorkflowService {
 //				.orderByExecutionId()
 				.listPage(pageSize * (pageNum - 1), pageSize);
 		
-		
 		List<TaskVO> customTaskList = new LinkedList<TaskVO>();
 	    for (HistoricTaskInstance task : htiList) {
 	    	//TODO:查看自定义属性
-	    	ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(task.getProcessDefinitionId());
+//	    	ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(task.getProcessDefinitionId());
 //	    	List<ActivityImpl> activitis =  processDefinitionEntity.getActivities();
 //	    	for(ActivityImpl activiti : activitis){
 //	    		System.out.println("url:"+activiti.getProperty("urlType"));
 //	    	}
 	    	HistoricProcessInstance  hp=  historyService.createHistoricProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
-	    	String url = hisurl1(task.getProcessInstanceId(), task.getId());
+	    	String url = hisUrlV1(task.getProcessInstanceId(), task.getId());
 //	    	String groupRole = map.get("grouprole");
 //	    	if(groupRole != null){
 //	    		//TODO:1.拿到通过grouprole拿到当前节点可以看到的人
@@ -400,7 +401,7 @@ public class WorkflowService {
 	}
 	
 
-	public String  hisurl1(String procInstanceId, String taskId) throws IOException{
+	public String  hisUrlV1(String procInstanceId, String taskId) throws IOException{
 	     //1.通过procInstanceId获取所有历史节点
 		 List<HistoricActivityInstance> activityInstances =historyService
 	               .createHistoricActivityInstanceQuery()
@@ -433,7 +434,7 @@ public class WorkflowService {
     }
 	
 	
-	public Map<String,String> hisurl(String procInstanceId, String taskId) throws IOException{
+	public Map<String,String> hisUrl(String procInstanceId, String taskId) throws IOException{
 	     //1.通过procInstanceId获取所有历史节点
 	     List<HistoricActivityInstance> activityInstances =historyService
 	               .createHistoricActivityInstanceQuery()

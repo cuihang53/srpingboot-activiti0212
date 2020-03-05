@@ -13,8 +13,11 @@ import java.io.Serializable;
 @Data
 @JsonIgnoreProperties
 public class JsonResult<T> implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    
 	private int status;
 
 	private String code;

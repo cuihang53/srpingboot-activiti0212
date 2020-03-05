@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.web.cors.CorsUtils;
 
 import com.activiti.config.security.CustomizeAbstractSecurityInterceptor;
 import com.activiti.config.security.CustomizeAccessDecisionManager;
@@ -94,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //http相关的配置，包括登入登出、异常处理、会话管理等
-    	http.cors().and().csrf().disable();
+    	http.cors().and().csrf().disable().authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll();
     	
     	http.authorizeRequests()
     	

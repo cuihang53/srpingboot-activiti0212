@@ -1,6 +1,5 @@
 package com.activiti.utils;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -24,7 +23,6 @@ class PropertyFilterMixIn{
 
 }
 
-@Log4j2
 public class JsonUtil {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -122,7 +120,8 @@ public class JsonUtil {
      * @param <T>
      * @return
      */
-    public static <T> T string2Obj(String str,Class<T> clazz){
+    @SuppressWarnings("unchecked")
+	public static <T> T string2Obj(String str,Class<T> clazz){
         if (StringUtils.isEmpty(str) || clazz == null){
             return null;
         }
@@ -141,7 +140,8 @@ public class JsonUtil {
      * @param <T>
      * @return
      */
-    public static <T> T string2Obj(String str, TypeReference<T> typeReference){
+    @SuppressWarnings("unchecked")
+	public static <T> T string2Obj(String str, TypeReference<T> typeReference){
         if (StringUtils.isEmpty(str) || typeReference == null){
             return null;
         }

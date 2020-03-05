@@ -260,35 +260,16 @@ public class WorkflowService {
 					.orderByTaskCreateTime().asc()
 					.listPage(offset, limit); //分页
 		
-		//Task是懒加载的对象 直接转json会报错(lazy loading outside command context  activiti)，需要copy数据
-		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
-	    for (Task task : taskList) {
-	    	TaskVO to = new TaskVO();
-	        to.setTaskId(task.getId());
-	        to.setTaskDefinitionKey(task.getTaskDefinitionKey());
-	        to.setTaskName(task.getName());
-	        to.setAssignee(task.getAssignee());
-	        to.setCreateTime(task.getCreateTime());
-	        to.setInstanceKey(task.getProcessInstanceId());
-	        customTaskList.add(to);
-	    }
 		//totalCount
 		Long count  = taskService.createTaskQuery()//
 				.taskAssignee(assignee)
-				.taskCandidateUser(assignee)
 				.orderByTaskCreateTime().asc()
 				.count();
-		//构造返回数据类型
-		Map<String,Object> result = new HashMap<>();
-		result.put("taskList", customTaskList);
-		result.put("count", count);
-		JsonResult<Map<String,Object>> json = new JsonResult<Map<String,Object>>();
-		json.setContent(result);
-		json.setStatus(HttpStatus.OK.value());
-		json.setCode(HttpStatus.OK.getReasonPhrase());
-		return JsonUtil.obj2String(json);
+		
+		return userCommonList(taskList, count);
 	}
 	
+
 	/**
 	 * 用户组任务，通过候选人去查询  canditateUser
 	 * */
@@ -298,7 +279,16 @@ public class WorkflowService {
 					.taskCandidateUser(assignee)//参与者，组任务查询
 					.orderByTaskCreateTime().asc()
 					.listPage(offset, limit); //分页
-		
+		//totalCount
+		Long count  = taskService.createTaskQuery()//
+				.taskCandidateUser(assignee)
+				.orderByTaskCreateTime().asc()
+				.count();
+		return userCommonList(taskList, count);
+	}
+	
+	
+	public String userCommonList(List<Task> taskList, Long count){
 		//Task是懒加载的对象 直接转json会报错(lazy loading outside command context  activiti)，需要copy数据
 		List<TaskVO> customTaskList = new ArrayList<TaskVO>();
 	    for (Task task : taskList) {
@@ -311,11 +301,7 @@ public class WorkflowService {
 	        to.setInstanceKey(task.getProcessInstanceId());
 	        customTaskList.add(to);
 	    }
-		//totalCount
-		Long count  = taskService.createTaskQuery()//
-				.taskAssignee(assignee)
-				.orderByTaskCreateTime().asc()
-				.count();
+		
 		//构造返回数据类型
 		Map<String,Object> result = new HashMap<>();
 		result.put("taskList", customTaskList);
@@ -326,10 +312,6 @@ public class WorkflowService {
 		json.setCode(HttpStatus.OK.getReasonPhrase());
 		return JsonUtil.obj2String(json);
 	}
-	
-	
-	
-	
 	
 	
 	/****

@@ -164,9 +164,19 @@ public class WorkflowController extends BaseRestController{
 	 * @throws JSONException 
 	 * name:当前登录人
 	 */
-	@ApiOperation(value = "登陆人的代办任务")
+	@ApiOperation(value = "登陆人的代办个人任务")
 	@RequestMapping(value="/listTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
 	public String listTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
+		Map<String,String> map = new HashMap<>();
+		map.put("user", "zhangsan");
+		String result = workflowService.findUserTaskListByName(map.get("user"),offset,limit);
+		return result;
+	}
+	
+	
+	@ApiOperation(value = "登陆人的代办组任务")
+	@RequestMapping(value="/listTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
+	public String listGroupTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
 		Map<String,String> map = new HashMap<>();
 		map.put("user", "zhangsan");
 		String result = workflowService.findUserGroupTaskListByName(map.get("user"),offset,limit);

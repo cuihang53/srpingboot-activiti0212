@@ -175,7 +175,7 @@ public class WorkflowController extends BaseRestController{
 	
 	
 	@ApiOperation(value = "登陆人的代办组任务")
-	@RequestMapping(value="/listTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
+	@RequestMapping(value="/listGroupTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
 	public String listGroupTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
 		Map<String,String> map = new HashMap<>();
 		map.put("user", "zhangsan");

@@ -1,4 +1,4 @@
-package com.activiti.common;
+package com.activiti.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.activiti.engine.repository.Deployment;

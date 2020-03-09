@@ -37,9 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.activiti.common.CommentResponse;
 import com.activiti.common.Constants;
 import com.activiti.common.JsonResult;
+import com.activiti.dto.CommentResponse;
 import com.activiti.entity.LeaveBill;
 import com.activiti.entity.WorkflowBean;
 import com.activiti.utils.JsonUtil;

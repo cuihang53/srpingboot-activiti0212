@@ -18,6 +18,7 @@ import com.activiti.common.JsonResult;
 import com.activiti.entity.SysUser;
 import com.activiti.utils.JsonUtil;
 import com.activiti.web.dao.ISysUserDao;
+import com.activiti.web.service.SysUserService;
 
 /**
  * @Author: Cuihang
@@ -26,7 +27,7 @@ import com.activiti.web.dao.ISysUserDao;
 @Component
 public class CustomizeAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
-    ISysUserDao sysUserDao;
+    SysUserService sysUserService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
@@ -38,11 +39,11 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
 
 //        String ip =  ((WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRemoteAddress();
          
-        SysUser sysUser = sysUserDao.findByUserName(userDetails.getUsername());
+        SysUser sysUser = sysUserService.findByUserAccount(userDetails.getUsername());
         sysUser.setLastLoginTime(new Date());
         sysUser.setUpdateTime(new Date());
         sysUser.setUpdateUser(sysUser.getId());
-        sysUserDao.save(sysUser);
+        sysUserService.save(sysUser);
         
         //此处还可以进行一些处理，比如登录成功之后可能需要返回给前台当前用户有哪些菜单权限，
         //进而前台动态的控制菜单的显示等，具体根据自己的业务需求进行扩展

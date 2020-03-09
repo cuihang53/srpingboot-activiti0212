@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.activiti.common.DeploymentResponse;
 import com.activiti.common.JsonResult;
+import com.activiti.dto.DeploymentResponse;
 import com.activiti.dto.WorkflowDto;
+import com.activiti.entity.SysUser;
 import com.activiti.entity.WorkflowBean;
 import com.activiti.utils.JsonUtil;
 import com.activiti.web.controller.base.BaseRestController;
+import com.activiti.web.service.SysUserService;
 import com.activiti.web.service.WorkflowService;
 
 import io.swagger.annotations.Api;
@@ -46,6 +48,11 @@ public class WorkflowController extends BaseRestController{
 	
 	@Autowired
 	private ProcessEngine processEngine;
+	
+	
+	
+	@Autowired
+	private SysUserService userService;
 	
 	/**
 	 * 部署对象列表
@@ -167,9 +174,11 @@ public class WorkflowController extends BaseRestController{
 	@ApiOperation(value = "登陆人的代办个人任务")
 	@RequestMapping(value="/listTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
 	public String listTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
-		Map<String,String> map = new HashMap<>();
-		map.put("user", "zhangsan");
-		String result = workflowService.findUserTaskListByName(map.get("user"),offset,limit);
+//		Map<String,String> map = new HashMap<>();
+//		map.put("user", "zhangsan");
+		
+		SysUser  user = userService.findByUserAccount();
+		String result = workflowService.findUserTaskListByName(String.valueOf(user.getId()),offset,limit);
 		return result;
 	}
 	
@@ -177,9 +186,10 @@ public class WorkflowController extends BaseRestController{
 	@ApiOperation(value = "登陆人的代办组任务")
 	@RequestMapping(value="/listGroupTask/offset/{offset}/limit/{limit}",method = RequestMethod.GET)
 	public String listGroupTask(@PathVariable("offset") Integer offset, @PathVariable("limit") Integer limit) {
-		Map<String,String> map = new HashMap<>();
-		map.put("user", "zhangsan");
-		String result = workflowService.findUserGroupTaskListByName(map.get("user"),offset,limit);
+//		Map<String,String> map = new HashMap<>();
+//		map.put("user", "zhangsan");
+		SysUser  user = userService.findByUserAccount();
+		String result = workflowService.findUserGroupTaskListByName(String.valueOf(user.getId()),offset,limit);
 		return result;
 	}
 

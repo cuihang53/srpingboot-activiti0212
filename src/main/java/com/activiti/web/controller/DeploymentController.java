@@ -7,8 +7,8 @@ import org.activiti.engine.repository.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.activiti.common.DeploymentResponse;
 import com.activiti.common.ToWeb;
+import com.activiti.dto.DeploymentResponse;
 import com.activiti.web.controller.base.RestServiceController;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.activiti.common;
+package com.activiti.dto;
 
 import java.util.Date;
 
